@@ -1,4 +1,4 @@
-const pool = require("../pool");
+const pool = require("../db/pool");
 
 // Transforma o objeto tutor na lista de valores. Fica em uma função só para não repetir a lista em criar e atualizar.
 function valoresDoTutor(t) {
