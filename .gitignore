@@ -2,3 +2,12 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+# build / cobertura
+dist/
+coverage/
+
+# logs e arquivos de sistema
+*.log
+.DS_Store
+Thumbs.db
