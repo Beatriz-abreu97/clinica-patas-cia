@@ -5,7 +5,7 @@ const { AppError } = require("../errors/AppError");
 // O Express 5 encaminha rejeições de funções async automaticamente.
 // eslint-disable-next-line no-unused-vars
 function errorHandler(erro, req, res, next) {
-  if (erro instanceof AppError) {
+  if (AppError.ehAppError(erro)) {
     return responder(res, erro.status, erro.codigo, erro.mensagem, erro.campos);
   }
 

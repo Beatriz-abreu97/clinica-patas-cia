@@ -1,13 +1,26 @@
 const pool = require("../db/pool");
 
-// Transforma o objeto tutor na lista de valores. Fica em uma função só para não repetir a lista em criar e atualizar.
+// Transforma o objeto tutor na lista de valores. Fica em uma função só para
+// não repetir a lista em criar e atualizar.
 function valoresDoTutor(t) {
   return [t.nome, t.telefone, t.email, t.cep, t.logradouro,
           t.numero, t.complemento, t.bairro, t.cidade, t.uf];
 }
 
-async function listar() {
-  const { rows } = await pool.query("SELECT * FROM tutor ORDER BY nome");
+// A busca é opcional: quando não vem, `$1` é NULL e o WHERE é ignorado.
+// O LEFT JOIN conta os animais de cada tutor em uma única consulta (evita N+1).
+async function listar(busca) {
+  const { rows } = await pool.query(
+    `SELECT t.*, COUNT(a.id)::int AS total_animais
+       FROM tutor t
+       LEFT JOIN animal a ON a.tutor_id = t.id
+      WHERE $1::text IS NULL
+         OR t.nome ILIKE '%' || $1 || '%'
+         OR t.telefone ILIKE '%' || $1 || '%'
+      GROUP BY t.id
+      ORDER BY t.nome`,
+    [busca || null]
+  );
   return rows;
 }
 
@@ -30,7 +43,8 @@ async function atualizar(id, tutor) {
   const { rows } = await pool.query(
     `UPDATE tutor
         SET nome = $1, telefone = $2, email = $3, cep = $4, logradouro = $5,
-            numero = $6, complemento = $7, bairro = $8, cidade = $9, uf = $10
+            numero = $6, complemento = $7, bairro = $8, cidade = $9, uf = $10,
+            atualizado_em = NOW()
       WHERE id = $11
       RETURNING *`,
     [...valoresDoTutor(tutor), id]
@@ -39,16 +53,17 @@ async function atualizar(id, tutor) {
 }
 
 async function excluir(id) {
-  await pool.query("DELETE FROM tutor WHERE id = $1", [id]);
+  const { rowCount } = await pool.query("DELETE FROM tutor WHERE id = $1", [id]);
+  return rowCount > 0;
 }
 
-// Informa se o tutor ainda tem animais vinculados
-async function possuiAnimais(id) {
+// Usado pelo service para bloquear a exclusão e montar a mensagem com a contagem.
+async function contarAnimais(id) {
   const { rows } = await pool.query(
-    "SELECT EXISTS (SELECT 1 FROM animal WHERE tutor_id = $1) AS existe",
+    "SELECT COUNT(*)::int AS total FROM animal WHERE tutor_id = $1",
     [id]
   );
-  return rows[0].existe;
+  return rows[0].total;
 }
 
-module.exports = { listar, buscarPorId, criar, atualizar, excluir, possuiAnimais };
+module.exports = { listar, buscarPorId, criar, atualizar, excluir, contarAnimais };
