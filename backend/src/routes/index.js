@@ -1,7 +1,9 @@
 const { Router } = require("express");
 const pacote = require("../../package.json");
+const { criarTutorRoutes } = require("./tutorRoutes");
+const { criarAnimalRoutes } = require("./animalRoutes");
 
-function criarRotas({ db }) {
+function criarRotas({ db, tutorService, animalService }) {
   const rotas = Router();
 
   rotas.get("/", (req, res) => {
@@ -22,6 +24,9 @@ function criarRotas({ db }) {
       res.status(503).json({ status: "degradado", banco: "indisponivel" });
     }
   });
+
+  rotas.use("/api/tutores", criarTutorRoutes({ tutorService }));
+  rotas.use("/api/animais", criarAnimalRoutes({ animalService }));
 
   return rotas;
 }

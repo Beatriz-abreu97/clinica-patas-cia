@@ -91,7 +91,7 @@ O repo já tem `backend/` e `frontend/` com `package.json` próprios. **Não** v
 clinica-patas-cia/
 ├── backend/          # API (meu escopo)
 ├── frontend/         # React (colega)
-├── docs/evidencias/  # prints usados no PDF
+├── doc/evidencias/   # prints usados no PDF
 ├── SPEC.md
 └── README.md
 ```
@@ -558,7 +558,7 @@ Se atrasar: cortar `atualizado_em`, `busca` e `GET /api/tutores/:id/animais` (ne
 
 ## 12. Evidências para o PDF (tópicos do modelo oficial)
 
-Coletar em `docs/evidencias/` com nomes descritivos (`01-lista-tutores.png`, `02-post-animal-201.png`, `03-erro-telefone-400.png`...).
+Coletar em `doc/evidencias/` com nomes descritivos (`01-lista-tutores.png`, `02-post-animal-201.png`, `03-erro-telefone-400.png`...).
 
 | # | Tópico do modelo | O que o backend fornece |
 |---|---|---|
@@ -598,7 +598,7 @@ Backend só é considerado pronto quando **todos** forem verdadeiros:
 - [ ] `README.md` com passos de instalação, `.env.example` e comandos.
 - [ ] Nenhum segredo no git (`git log -p | Select-String "postgresql://"`).
 - [ ] Rotas temporárias (`/teste-banco`, `/teste-repos`) removidas.
-- [ ] Prints de sucesso e de erro salvos em `docs/evidencias/`.
+- [ ] Prints de sucesso e de erro salvos em `doc/evidencias/`.
 - [ ] Declaração de IA redigida.
 
 ---

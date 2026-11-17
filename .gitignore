@@ -11,3 +11,6 @@ coverage/
 *.log
 .DS_Store
 Thumbs.db
+
+# documentos de apoio (enunciado, rascunhos, PDF final de entrega)
+/doc/*.pdf

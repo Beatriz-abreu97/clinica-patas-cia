@@ -1,20 +1,19 @@
 const pool = require("../db/pool");
 
-// Transforma o objeto animal na lista de valores. Fica em uma função só para não repetir a lista em criar e atualizar.
+// Transforma o objeto animal na lista de valores. Fica em uma função só para
+// não repetir a lista em criar e atualizar.
 function valoresDoAnimal(a) {
   return [a.nome, a.especie, a.raca, a.sexo, a.idade, a.peso, a.tutor_id];
 }
 
-async function listar() {
-  const { rows } = await pool.query("SELECT * FROM animal ORDER BY nome");
-  return rows;
-}
-
-// Animais de um tutor específico (tela "animais do tutor")
-async function listarPorTutor(tutorId) {
+// Sem tutorId, lista todos; com tutorId, filtra os animais do tutor.
+// O filtro opcional evita duas funções quase iguais.
+async function listar(tutorId) {
   const { rows } = await pool.query(
-    "SELECT * FROM animal WHERE tutor_id = $1 ORDER BY nome",
-    [tutorId]
+    `SELECT * FROM animal
+      WHERE $1::int IS NULL OR tutor_id = $1
+      ORDER BY nome`,
+    [tutorId ?? null]
   );
   return rows;
 }
@@ -37,7 +36,8 @@ async function criar(animal) {
 async function atualizar(id, animal) {
   const { rows } = await pool.query(
     `UPDATE animal
-        SET nome = $1, especie = $2, raca = $3, sexo = $4, idade = $5, peso = $6, tutor_id = $7
+        SET nome = $1, especie = $2, raca = $3, sexo = $4, idade = $5, peso = $6,
+            tutor_id = $7, atualizado_em = NOW()
       WHERE id = $8
       RETURNING *`,
     [...valoresDoAnimal(animal), id]
@@ -46,8 +46,8 @@ async function atualizar(id, animal) {
 }
 
 async function excluir(id) {
-  await pool.query("DELETE FROM animal WHERE id = $1", [id]);
+  const { rowCount } = await pool.query("DELETE FROM animal WHERE id = $1", [id]);
+  return rowCount > 0;
 }
 
-
-module.exports = { listar, listarPorTutor, buscarPorId, criar, atualizar, excluir };
+module.exports = { listar, buscarPorId, criar, atualizar, excluir };

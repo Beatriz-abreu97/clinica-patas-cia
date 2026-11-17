@@ -1,3 +1,8 @@
+// Symbol.for é global no processo: dois carregamentos do mesmo arquivo
+// (por exemplo, ESM no teste e CommonJS na aplicação) compartilham o marcador.
+// Por isso não usamos instanceof no errorHandler.
+const MARCADOR = Symbol.for("patas-cia.AppError");
+
 // Erro de aplicação: carrega o status HTTP e o código que a API devolve,
 // evitando que cada camada invente o próprio formato de resposta.
 class AppError extends Error {
@@ -8,6 +13,11 @@ class AppError extends Error {
     this.codigo = codigo;
     this.mensagem = mensagem;
     this.campos = campos;
+    Object.defineProperty(this, MARCADOR, { value: true });
+  }
+
+  static ehAppError(erro) {
+    return Boolean(erro && erro[MARCADOR] === true);
   }
 
   static validacao(campos, mensagem = "Dados inválidos.") {
