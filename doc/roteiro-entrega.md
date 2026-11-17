@@ -36,6 +36,9 @@ Use Insomnia/Postman (melhor: mostra método, URL, status e corpo na mesma tela)
 | `11-cors.png` | DevTools → Network → requisição do front | header `access-control-allow-origin` | 7 |
 | `12-supabase-tabelas.png` | Supabase → Table Editor → `tutor` e `animal` | dados e relação `tutor_id` | 8 |
 | `13-render-deploy.png` | Render → Deploys | `Live`, commit e data | 5, 8 |
+| `14-actions-keep-alive.png` | GitHub → Actions → **Keep-alive da API** → run verde | workflow de ping ativo | 5, 8 |
+
+O keep-alive roda no GitHub Actions (`.github/workflows/keep-alive.yml`). Capture também a aba Actions com um run concluído: isso comprova que a aplicação é mantida acordada no plano gratuito.
 
 ### Comandos prontos (PowerShell)
 
