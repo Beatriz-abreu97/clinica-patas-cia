@@ -1,6 +1,5 @@
 const { AppError } = require("../errors/AppError");
 
-// Regras de negócio de animal. Não conhece req/res e não escreve SQL.
 function criarAnimalService({ animalRepository, tutorRepository }) {
   async function listar({ tutorId } = {}) {
     return animalRepository.listar(tutorId);
@@ -14,8 +13,6 @@ function criarAnimalService({ animalRepository, tutorRepository }) {
     return animal;
   }
 
-  // Todo animal pertence a um tutor existente. A FK do banco garante o mesmo,
-  // mas a checagem aqui permite responder 400 com o campo identificado.
   async function garantirTutorExiste(tutorId) {
     const tutor = await tutorRepository.buscarPorId(tutorId);
     if (!tutor) {

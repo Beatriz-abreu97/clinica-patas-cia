@@ -3,7 +3,6 @@ const { opcional, aceitaVirgula } = require("./campos");
 
 const SEXOS = ["M", "F"];
 
-// Aceita "m", " f " e normaliza para maiúscula antes de validar o enum.
 const sexo = z.preprocess(
   (valor) => (typeof valor === "string" ? valor.trim().toUpperCase() : valor),
   z.enum(SEXOS, { message: "Sexo deve ser M ou F." })
@@ -45,7 +44,6 @@ const animalSchema = z.object({
     .positive({ message: "Tutor é obrigatório." }),
 });
 
-// Filtro da listagem: /api/animais?tutorId=1
 const animalQuerySchema = z.object({
   tutorId: opcional(
     z.coerce

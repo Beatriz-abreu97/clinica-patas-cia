@@ -3,8 +3,6 @@ const { apenasDigitos, opcional } = require("./campos");
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-// Aceita "(85) 99999-9999", "85 3222-1100" ou só dígitos. Sempre normaliza para
-// dígitos, porque é assim que o telefone é armazenado e comparado.
 const telefone = z
   .string({ message: "Telefone é obrigatório." })
   .trim()

@@ -1,5 +1,3 @@
-// Traduz HTTP para o service: lê dados já validados, define status e devolve JSON.
-// Nenhuma regra de negócio e nenhum SQL vivem aqui.
 function criarTutorController({ tutorService }) {
   async function listar(req, res) {
     const { busca } = req.validados.query;

@@ -1,7 +1,5 @@
 const { AppError } = require("../errors/AppError");
 
-// Regras de negócio de tutor. Não conhece req/res e não escreve SQL:
-// recebe os repositórios por parâmetro para poder ser testado sem banco.
 function criarTutorService({ tutorRepository, animalRepository }) {
   async function listar({ busca } = {}) {
     return tutorRepository.listar(busca);
@@ -33,9 +31,6 @@ function criarTutorService({ tutorRepository, animalRepository }) {
     return atualizado;
   }
 
-  // Regra central do cenário: tutor com animais não pode ser excluído.
-  // O ON DELETE RESTRICT do banco é a segunda barreira, para o caso de
-  // um animal ser cadastrado entre a verificação e o DELETE.
   async function excluir(id) {
     await buscarPorId(id);
     const totalAnimais = await tutorRepository.contarAnimais(id);

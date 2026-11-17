@@ -1,8 +1,5 @@
 const { AppError } = require("../errors/AppError");
 
-// Middleware que aplica um schema Zod e guarda o resultado normalizado em
-// req.validados[origem]. Não sobrescrevemos req.query porque, no Express 5,
-// ele é somente leitura.
 function validar(schema, origem = "body") {
   return (req, res, next) => {
     const resultado = schema.safeParse(req[origem]);

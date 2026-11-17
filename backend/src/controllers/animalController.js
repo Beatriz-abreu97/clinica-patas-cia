@@ -1,4 +1,3 @@
-// Traduz HTTP para o service: lê dados já validados, define status e devolve JSON.
 function criarAnimalController({ animalService }) {
   async function listar(req, res) {
     const { tutorId } = req.validados.query;

@@ -1,14 +1,10 @@
 const pool = require("../db/pool");
 
-// Transforma o objeto tutor na lista de valores. Fica em uma função só para
-// não repetir a lista em criar e atualizar.
 function valoresDoTutor(t) {
   return [t.nome, t.telefone, t.email, t.cep, t.logradouro,
           t.numero, t.complemento, t.bairro, t.cidade, t.uf];
 }
 
-// A busca é opcional: quando não vem, `$1` é NULL e o WHERE é ignorado.
-// O LEFT JOIN conta os animais de cada tutor em uma única consulta (evita N+1).
 async function listar(busca) {
   const { rows } = await pool.query(
     `SELECT t.*, COUNT(a.id)::int AS total_animais
@@ -26,7 +22,7 @@ async function listar(busca) {
 
 async function buscarPorId(id) {
   const { rows } = await pool.query("SELECT * FROM tutor WHERE id = $1", [id]);
-  return rows[0]; // undefined se não existir
+  return rows[0];
 }
 
 async function criar(tutor) {
@@ -57,7 +53,6 @@ async function excluir(id) {
   return rowCount > 0;
 }
 
-// Usado pelo service para bloquear a exclusão e montar a mensagem com a contagem.
 async function contarAnimais(id) {
   const { rows } = await pool.query(
     "SELECT COUNT(*)::int AS total FROM animal WHERE tutor_id = $1",

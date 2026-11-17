@@ -1,5 +1,3 @@
-// Lê e valida as variáveis de ambiente uma única vez, no boot da aplicação.
-// Falhar aqui é melhor do que descobrir a variável faltando no meio de uma requisição.
 const path = require("path");
 
 require("dotenv").config({ path: path.resolve(__dirname, "../../.env"), quiet: true });
@@ -28,8 +26,6 @@ if (!/^postgres(ql)?:\/\//.test(resultado.data.DATABASE_URL)) {
   process.exit(1);
 }
 
-// CORS_ORIGINS chega como string separada por vírgula; normalizamos para array
-// e removemos a barra final, que é a causa mais comum de CORS falhar em produção.
 const origens = resultado.data.CORS_ORIGINS.split(",")
   .map((origem) => origem.trim().replace(/\/+$/, ""))
   .filter(Boolean);

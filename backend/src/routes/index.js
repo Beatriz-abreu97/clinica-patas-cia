@@ -14,7 +14,6 @@ function criarRotas({ db, tutorService, animalService }) {
     });
   });
 
-  // Usado pelo health check do Render e pelo ping que evita a hibernação.
   rotas.get("/health", async (req, res) => {
     try {
       await db.query("SELECT 1");

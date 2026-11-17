@@ -1,8 +1,3 @@
--- Schema inicial da Clínica Patas & Cia.
--- Já aplicado no projeto Supabase da equipe.
--- Use este arquivo apenas para recriar o banco do zero (novo projeto/local).
-
--- Tutores: clientes da clínica.
 CREATE TABLE tutor (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(120) NOT NULL,
@@ -18,7 +13,6 @@ CREATE TABLE tutor (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Animais: cada animal pertence a um tutor (1:N).
 CREATE TABLE animal (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -30,7 +24,6 @@ CREATE TABLE animal (
     tutor_id INT NOT NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    -- Impede a exclusão de um tutor que ainda tenha animais vinculados.
     CONSTRAINT fk_animal_tutor
         FOREIGN KEY (tutor_id)
         REFERENCES tutor(id)

@@ -5,8 +5,6 @@ const { criarRotas } = require("./routes");
 const { notFound } = require("./middlewares/notFound");
 const { errorHandler } = require("./middlewares/errorHandler");
 
-// Fábrica do app: recebe suas dependências de fora, como o construtor de um
-// bean no Spring. Isso permite testar as rotas com um banco falso.
 function criarApp({ db, corsOrigins = [], tutorService, animalService }) {
   const app = express();
 
@@ -16,7 +14,6 @@ function criarApp({ db, corsOrigins = [], tutorService, animalService }) {
 
   app.use(criarRotas({ db, tutorService, animalService }));
 
-  // A ordem importa: 404 e erro ficam depois de todas as rotas.
   app.use(notFound);
   app.use(errorHandler);
 

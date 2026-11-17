@@ -1,13 +1,9 @@
 const pool = require("../db/pool");
 
-// Transforma o objeto animal na lista de valores. Fica em uma função só para
-// não repetir a lista em criar e atualizar.
 function valoresDoAnimal(a) {
   return [a.nome, a.especie, a.raca, a.sexo, a.idade, a.peso, a.tutor_id];
 }
 
-// Sem tutorId, lista todos; com tutorId, filtra os animais do tutor.
-// O filtro opcional evita duas funções quase iguais.
 async function listar(tutorId) {
   const { rows } = await pool.query(
     `SELECT * FROM animal
@@ -20,7 +16,7 @@ async function listar(tutorId) {
 
 async function buscarPorId(id) {
   const { rows } = await pool.query("SELECT * FROM animal WHERE id = $1", [id]);
-  return rows[0]; // undefined se não existir
+  return rows[0];
 }
 
 async function criar(animal) {
