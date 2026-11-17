@@ -1,0 +1,30 @@
+name: Keep-alive da API
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: keep-alive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Acordar a API no Render
+        env:
+          API_URL: https://clinica-patas-cia.onrender.com/health
+        run: |
+          for tentativa in 1 2 3; do
+            status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 120 "$API_URL" || true)
+            echo "Tentativa ${tentativa}: HTTP ${status}"
+            if [ "${status}" = "200" ]; then
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "A API nao respondeu 200 apos 3 tentativas."
+          exit 1

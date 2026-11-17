@@ -525,7 +525,7 @@ Em dev, `http://localhost:5173` (Vite). Em produção, a URL da Vercel **sem bar
 4. Env vars: `DATABASE_URL`, `CORS_ORIGINS`, `NODE_ENV=production`.
 5. Deploy automático no push da `main`.
 
-Cold start: instância gratuita hiberna após ~15 min. Para cumprir "app no ar até 10/12", configurar ping automático em `/health` a cada 10 min (cron-job.org ou UptimeRobot) e/ou fazer upgrade.
+Cold start: instância gratuita hiberna após ~15 min. Para cumprir "app no ar até 10/12", o repo inclui o workflow `.github/workflows/keep-alive.yml`, que pinga `/health` a cada 10 min (e pode ser executado manualmente na aba Actions). Alternativa: cron-job.org ou UptimeRobot.
 
 `/health` responde:
 

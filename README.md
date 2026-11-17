@@ -111,7 +111,7 @@ Regras principais: campos obrigatórios, telefone válido, e **não permitir exc
 6. Environment: `DATABASE_URL`, `CORS_ORIGINS` (URL da Vercel, sem barra final) e `NODE_ENV=production`.
 7. Deploy automático a cada push na `main`.
 
-> O plano gratuito do Render hiberna após ~15 min. Configure um ping em `/health` a cada 10 minutos (cron-job.org ou UptimeRobot) para manter a aplicação no ar até 10/12.
+> O plano gratuito do Render hiberna após ~15 min. O workflow `.github/workflows/keep-alive.yml` pinga `/health` a cada 10 minutos para manter a aplicação acordada até 10/12; também pode ser disparado manualmente na aba **Actions** do GitHub. Um serviço externo (cron-job.org ou UptimeRobot) continua valendo como alternativa.
 
 ### Front — Vercel
 
