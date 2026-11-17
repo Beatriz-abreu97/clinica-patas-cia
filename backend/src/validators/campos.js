@@ -21,4 +21,13 @@ function inteiroPositivo(mensagem) {
   );
 }
 
-module.exports = { apenasDigitos, opcional, inteiroPositivo };
+// Aceita "12,5" (padrão brasileiro) além de "12.5". O número em si continua
+// validado pelo schema que vem depois.
+function aceitaVirgula(schema) {
+  return z.preprocess(
+    (valor) => (typeof valor === "string" ? valor.trim().replace(",", ".") : valor),
+    schema
+  );
+}
+
+module.exports = { apenasDigitos, opcional, inteiroPositivo, aceitaVirgula };

@@ -1,5 +1,5 @@
 const { z } = require("zod");
-const { opcional } = require("./campos");
+const { opcional, aceitaVirgula } = require("./campos");
 
 const SEXOS = ["M", "F"];
 
@@ -23,17 +23,21 @@ const animalSchema = z.object({
   raca: opcional(z.string().trim().max(80, { message: "Raça deve ter no máximo 80 caracteres." })),
   sexo,
   idade: opcional(
-    z.coerce
-      .number({ message: "Idade deve ser um número." })
-      .int({ message: "Idade deve ser um número inteiro." })
-      .min(0, { message: "Idade não pode ser negativa." })
-      .max(100, { message: "Idade deve ser no máximo 100 anos." })
+    aceitaVirgula(
+      z.coerce
+        .number({ message: "Idade deve ser um número." })
+        .int({ message: "Idade deve ser um número inteiro." })
+        .min(0, { message: "Idade não pode ser negativa." })
+        .max(100, { message: "Idade deve ser no máximo 100 anos." })
+    )
   ),
   peso: opcional(
-    z.coerce
-      .number({ message: "Peso deve ser um número." })
-      .gt(0, { message: "Peso deve ser maior que zero." })
-      .max(999.99, { message: "Peso deve ser no máximo 999.99 kg." })
+    aceitaVirgula(
+      z.coerce
+        .number({ message: "Peso deve ser um número." })
+        .gt(0, { message: "Peso deve ser maior que zero." })
+        .max(999.99, { message: "Peso deve ser no máximo 999.99 kg." })
+    )
   ),
   tutor_id: z.coerce
     .number({ message: "Tutor é obrigatório." })

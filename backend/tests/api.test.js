@@ -295,7 +295,7 @@ describe("API — animais", () => {
       raca: "",
       sexo: "m",
       idade: "3",
-      peso: "28.4",
+      peso: "28,4",
       tutor_id: "1",
     });
 
