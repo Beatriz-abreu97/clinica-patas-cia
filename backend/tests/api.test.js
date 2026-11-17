@@ -78,6 +78,16 @@ describe("API — infraestrutura", () => {
     expect(db.query).toHaveBeenCalled();
   });
 
+  it("GET / informa serviço, versão e commit publicado", async () => {
+    const { app } = criarAppDeTeste();
+
+    const resposta = await request(app).get("/");
+
+    expect(resposta.status).toBe(200);
+    expect(resposta.body.servico).toContain("Patas");
+    expect(resposta.body).toHaveProperty("commit");
+  });
+
   it("rota inexistente responde 404 no formato padrão de erro", async () => {
     const { app } = criarAppDeTeste();
 

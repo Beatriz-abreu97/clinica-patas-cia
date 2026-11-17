@@ -10,6 +10,7 @@ function criarRotas({ db, tutorService, animalService }) {
     res.json({
       servico: "Clínica Patas & Cia — API",
       versao: pacote.version,
+      commit: process.env.RENDER_GIT_COMMIT || "local",
       contratos: "backend/API.md",
     });
   });
