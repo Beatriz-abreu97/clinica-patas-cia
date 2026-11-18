@@ -7,7 +7,9 @@ Sistema Web para a clínica veterinária de bairro **Patas & Cia**, desenvolvido
 O cenário: a clínica controla tutores e animais em um caderno, o que gera consultas duplicadas e dificuldade para localizar um animal quando o tutor liga. A aplicação resolve isso com cadastro de **tutores** e dos **animais** de cada tutor.
 
 - **Proposta e plano:** [`SPEC.md`](SPEC.md)
-- **Contrato da API:** [`backend/API.md`](backend/API.md)
+- **Contrato da API:** [`backend/openapi.yaml`](backend/openapi.yaml) — navegável em [/api-docs](https://clinica-patas-cia.onrender.com/api-docs)
+- **Resumo amigável:** [`backend/API.md`](backend/API.md)
+- **Roteiro de entrega (prints):** [`doc/roteiro-entrega.md`](doc/roteiro-entrega.md)
 - **Enunciado da disciplina:** `doc/N695_Proposta_de_Trabalho_2026_2.pdf` (não versionado)
 
 ## Stack
@@ -18,7 +20,9 @@ O cenário: a clínica controla tutores e animais em um caderno, o que gera cons
 | Back-end | Node.js 22 + Express 5 |
 | Banco | PostgreSQL (Supabase) |
 | Validação | Zod |
-| Testes | Vitest + Supertest |
+| Contrato | OpenAPI 3.1 + Swagger UI |
+| Proteção | Rate limit (300 req/15 min por IP) |
+| Testes | Vitest + Supertest (50 testes) |
 
 ## Estrutura
 
@@ -31,15 +35,16 @@ clinica-patas-cia/
 │   │   ├── services/       regras de negócio
 │   │   ├── repositories/   SQL parametrizado
 │   │   ├── validators/     schemas Zod
-│   │   ├── middlewares/    erro central e 404
+│   │   ├── middlewares/    erro central, 404 e rate limit
 │   │   ├── errors/         AppError
 │   │   ├── config/         leitura/validação do .env
 │   │   └── db/             pool do Postgres
 │   ├── database/       migrations SQL
-│   └── tests/          testes automatizados
+│   ├── tests/          testes automatizados
+│   ├── openapi.yaml    contrato OpenAPI 3.1 (fonte da verdade)
+│   └── API.md          resumo amigável para o front
 ├── frontend/           React (equipe do front)
 ├── doc/                materiais de apoio e evidências
-├── API.md              contrato da API
 └── SPEC.md             plano de desenvolvimento
 ```
 
@@ -62,7 +67,7 @@ DATABASE_URL=postgresql://postgres.<ref>:<senha>@aws-1-<regiao>.pooler.supabase.
 CORS_ORIGINS=http://localhost:5173
 ```
 
-> Use a **Session Pooler** do Supabase (Project Settings → Database → Connection string). A conexão direta é IPv6 e não funciona no Render.
+> Use a **Session Pooler** do Supabase (Project Settings → Database → Connection string). A conexão direta é IPv6 e não funciona no Render. O pool sempre usa SSL (exigência do Supabase); um Postgres local sem SSL não conecta.
 
 Banco (apenas uma vez):
 
@@ -116,6 +121,19 @@ Regras principais: campos obrigatórios, telefone válido, e **não permitir exc
 ### Front — Vercel
 
 Root Directory `frontend`; variável `VITE_API_URL=https://<api>.onrender.com/api`.
+
+## Runbook de deploy (dia a dia)
+
+| Situação | O que acontece / o que fazer |
+|---|---|
+| Push com mudança em `backend/**` | Render builda e publica sozinho (~1–3 min; após o Swagger UI, conte até ~5) |
+| Push só de docs (`README.md`, `SPEC.md`, `doc/`, `.github/`) | **Não gera deploy** — comportamento esperado do Root Directory |
+| Deploy manual | Render → **Manual Deploy → Deploy latest commit** |
+| Trocar variável de ambiente no Render | Salvar e depois **Manual Deploy** para o processo reiniciar com o novo valor |
+| Conferir a versão publicada | `GET https://clinica-patas-cia.onrender.com` → campo `commit`; comparar com `git rev-parse HEAD` |
+| Antes de apresentar / gravar prints | Conferir o commit acima e **não pushar código** minutos antes |
+| API fora do ar por 2–3 min | Switchover do plano free durante deploy; aguardar e retestar |
+| API dormindo (plano free) | Normal após ~15 min ociosa; o keep-alive evita, e qualquer request acorda em segundos |
 
 ## Observações para a equipe
 
