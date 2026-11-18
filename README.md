@@ -97,7 +97,7 @@ As 8 operações exigidas pelo trabalho estão implementadas (criar, listar, atu
 | Animais | `GET/POST /api/animais`, `GET/PUT/DELETE /api/animais/:id` |
 | Infra | `GET /health`, `GET /api-docs` (Swagger UI), `GET /api-docs.json` |
 
-Regras principais: campos obrigatórios, telefone válido, e **não permitir excluir tutor que ainda tenha animais** (409).
+Regras principais: campos obrigatórios, telefone válido, e **não permitir excluir tutor que ainda tenha animais** (409). Proteção: rate limit de 300 requisições por IP a cada 15 minutos (429 `LIMITE_EXCEDIDO`), com `trust proxy` configurado para o Render.
 
 ## Deploy
 

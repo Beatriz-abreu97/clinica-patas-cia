@@ -62,7 +62,7 @@ await fetch(`${api}/tutores/7`, { method: "DELETE" });
 | PUT | `/api/animais/:id` | atualiza animal |
 | DELETE | `/api/animais/:id` | exclui animal |
 
-Sem autenticação. CORS liberado para a URL do front (`CORS_ORIGINS` no Render).
+Sem autenticação. CORS liberado para a URL do front (`CORS_ORIGINS` no Render). Limite de **300 requisições por IP a cada 15 minutos**; acima disso, `429` com código `LIMITE_EXCEDIDO`.
 
 ## Armadilhas que valem saber antes de codar
 

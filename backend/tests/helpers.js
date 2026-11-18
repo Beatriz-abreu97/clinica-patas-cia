@@ -51,15 +51,16 @@ export function criarServicoAnimalFalso(sobrescritas = {}) {
   };
 }
 
-export function criarAppDeTeste(sobrescritasDoServico = {}, sobrescritasDoServicoAnimal = {}) {
+export function criarAppDeTeste(sobrescritasDoServico = {}, sobrescritasDoServicoAnimal = {}, opcoes = {}) {
   const tutorService = criarServicoFalso(sobrescritasDoServico);
   const animalService = criarServicoAnimalFalso(sobrescritasDoServicoAnimal);
-  const db = { query: vi.fn(async () => ({ rows: [{ ok: 1 }] })) };
+  const db = opcoes.db || { query: vi.fn(async () => ({ rows: [{ ok: 1 }] })) };
   const app = criarApp({
     db,
     corsOrigins: ["http://localhost:5173"],
     tutorService,
     animalService,
+    limite: opcoes.limite,
   });
 
   return { app, tutorService, animalService, db };

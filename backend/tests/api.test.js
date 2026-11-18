@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import request from "supertest";
 
 import { AppError } from "../src/errors/AppError.js";
+import { criarLimiteRequisicoes } from "../src/middlewares/limiteRequisicoes.js";
 import { criarAppDeTeste } from "./helpers.js";
 
 describe("API — infraestrutura", () => {
@@ -13,6 +14,74 @@ describe("API — infraestrutura", () => {
     expect(resposta.status).toBe(200);
     expect(resposta.body).toEqual({ status: "ok", banco: "ok" });
     expect(db.query).toHaveBeenCalled();
+  });
+
+  it("GET /health responde 503 quando o banco está indisponível", async () => {
+    const db = { query: vi.fn(async () => { throw new Error("connect ECONNREFUSED"); }) };
+    const { app } = criarAppDeTeste({}, {}, { db });
+
+    const resposta = await request(app).get("/health");
+
+    expect(resposta.status).toBe(503);
+    expect(resposta.body).toEqual({ status: "degradado", banco: "indisponivel" });
+  });
+
+  it("converte violação de FK do banco (23503) em 409 CONFLITO", async () => {
+    const { app } = criarAppDeTeste({
+      excluir: vi.fn(async () => {
+        const erro = new Error('delete on table "tutor" violates foreign key constraint');
+        erro.code = "23503";
+        throw erro;
+      }),
+    });
+
+    const resposta = await request(app).delete("/api/tutores/1");
+
+    expect(resposta.status).toBe(409);
+    expect(resposta.body.erro.codigo).toBe("CONFLITO");
+  });
+
+  it("esconde detalhes técnicos em erro interno (500)", async () => {
+    const { app } = criarAppDeTeste({
+      buscarPorId: vi.fn(async () => {
+        throw new Error("detalhe interno com segredo");
+      }),
+    });
+
+    const resposta = await request(app).get("/api/tutores/1");
+
+    expect(resposta.status).toBe(500);
+    expect(resposta.body.erro).toEqual({
+      codigo: "ERRO_INTERNO",
+      mensagem: "Erro interno do servidor. Tente novamente.",
+    });
+    expect(resposta.text).not.toContain("detalhe interno");
+  });
+
+  it("ignora campos desconhecidos no corpo", async () => {
+    const { app, tutorService } = criarAppDeTeste();
+
+    const resposta = await request(app).post("/api/tutores").send({
+      nome: "Ana Beatriz",
+      telefone: "85999999999",
+      papel: "admin",
+    });
+
+    expect(resposta.status).toBe(201);
+    expect(tutorService.criar.mock.calls[0][0]).not.toHaveProperty("papel");
+  });
+
+  it("bloqueia com 429 no formato padrão quando o limite de requisições é excedido", async () => {
+    const limite = criarLimiteRequisicoes({ janelaMs: 60_000, maximo: 2 });
+    const { app } = criarAppDeTeste({}, {}, { limite });
+
+    await request(app).get("/health");
+    await request(app).get("/health");
+    const resposta = await request(app).get("/health");
+
+    expect(resposta.status).toBe(429);
+    expect(resposta.body.erro.codigo).toBe("LIMITE_EXCEDIDO");
+    expect(resposta.body.erro.mensagem).toContain("Muitas requisições");
   });
 
   it("GET / informa serviço, versão e commit publicado", async () => {

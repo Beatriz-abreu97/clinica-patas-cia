@@ -40,6 +40,8 @@ paths:
                 versao: "1.0.0"
                 commit: "150988f"
                 contratos: "backend/API.md"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
   /health:
     get:
       tags: [Infra]
@@ -65,6 +67,8 @@ paths:
               example:
                 status: degradado
                 banco: indisponivel
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
   /api/tutores:
     get:
       tags: [Tutores]
@@ -101,6 +105,8 @@ paths:
           $ref: "#/components/responses/Validacao"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
     post:
       tags: [Tutores]
       summary: Cadastra tutor
@@ -152,6 +158,8 @@ paths:
           $ref: "#/components/responses/Validacao"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
   /api/tutores/{id}:
     get:
       tags: [Tutores]
@@ -172,6 +180,8 @@ paths:
           $ref: "#/components/responses/NaoEncontrado"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
     put:
       tags: [Tutores]
       summary: Atualiza tutor
@@ -203,6 +213,8 @@ paths:
           $ref: "#/components/responses/NaoEncontrado"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
     delete:
       tags: [Tutores]
       summary: Exclui tutor
@@ -221,6 +233,8 @@ paths:
           $ref: "#/components/responses/Conflito"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
   /api/tutores/{id}/animais:
     get:
       tags: [Tutores]
@@ -244,6 +258,8 @@ paths:
           $ref: "#/components/responses/NaoEncontrado"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
   /api/animais:
     get:
       tags: [Animais]
@@ -276,6 +292,8 @@ paths:
           $ref: "#/components/responses/Validacao"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
     post:
       tags: [Animais]
       summary: Cadastra animal
@@ -322,6 +340,8 @@ paths:
           $ref: "#/components/responses/Validacao"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
   /api/animais/{id}:
     get:
       tags: [Animais]
@@ -342,6 +362,8 @@ paths:
           $ref: "#/components/responses/NaoEncontrado"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
     put:
       tags: [Animais]
       summary: Atualiza animal
@@ -375,6 +397,8 @@ paths:
           $ref: "#/components/responses/NaoEncontrado"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
     delete:
       tags: [Animais]
       summary: Exclui animal
@@ -390,6 +414,8 @@ paths:
           $ref: "#/components/responses/NaoEncontrado"
         "500":
           $ref: "#/components/responses/ErroInterno"
+        "429":
+          $ref: "#/components/responses/LimiteExcedido"
 components:
   parameters:
     Id:
@@ -484,6 +510,16 @@ components:
             erro:
               codigo: ERRO_INTERNO
               mensagem: "Erro interno do servidor. Tente novamente."
+    LimiteExcedido:
+      description: Muitas requisições do mesmo IP na janela de 15 minutos.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Erro"
+          example:
+            erro:
+              codigo: LIMITE_EXCEDIDO
+              mensagem: "Muitas requisições deste IP. Tente novamente em alguns minutos."
   schemas:
     Raiz:
       type: object
@@ -668,7 +704,7 @@ components:
           properties:
             codigo:
               type: string
-              enum: [VALIDACAO, JSON_INVALIDO, NAO_ENCONTRADO, CONFLITO, ERRO_INTERNO]
+              enum: [VALIDACAO, JSON_INVALIDO, NAO_ENCONTRADO, CONFLITO, ERRO_INTERNO, LIMITE_EXCEDIDO]
             mensagem:
               type: string
             campos:
