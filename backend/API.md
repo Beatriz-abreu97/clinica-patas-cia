@@ -1,251 +1,77 @@
 # API — Clínica Patas & Cia
 
-Contrato da API REST do backend. É a fonte da verdade para o front (React) e para as evidências do PDF.
+Guia rápido para quem vai consumir a API (olá, time do front!) e para as evidências do trabalho.
 
-- **Base local:** `http://localhost:3000/api`
-- **Base em produção:** `https://clinica-patas-cia.onrender.com/api` (Render, deploy da `main`)
-- **Autenticação:** nenhuma (não é exigida no cenário)
-- **Formato:** JSON, `Content-Type: application/json` em POST/PUT
-- **Health check:** `GET /health` (fora de `/api`)
+> **A fonte da verdade é o contrato OpenAPI 3.1.** Se algo aqui divergir, prevalece o que está lá:
+>
+> - **UI interativa:** [`/api-docs`](https://clinica-patas-cia.onrender.com/api-docs) — clique numa rota e use **Try it out** para ver a resposta de verdade.
+> - **Especificação:** [`backend/openapi.yaml`](openapi.yaml)
+> - **JSON para importar** no Postman/Insomnia: [`/api-docs.json`](https://clinica-patas-cia.onrender.com/api-docs.json)
 
-## Resumo dos endpoints
+Este arquivo é só o resumo amigável de como usar no dia a dia.
 
-| Método | Rota | Sucesso | Erros possíveis |
-|---|---|---|---|
-| GET | `/api/tutores?busca=` | 200 lista | 400 |
-| GET | `/api/tutores/:id` | 200 | 400, 404 |
-| GET | `/api/tutores/:id/animais` | 200 lista | 400, 404 |
-| POST | `/api/tutores` | 201 + `Location` | 400 |
-| PUT | `/api/tutores/:id` | 200 | 400, 404 |
-| DELETE | `/api/tutores/:id` | 204 | 400, 404, **409** |
-| GET | `/api/animais?tutorId=` | 200 lista | 400 |
-| GET | `/api/animais/:id` | 200 | 400, 404 |
-| POST | `/api/animais` | 201 + `Location` | 400 |
-| PUT | `/api/animais/:id` | 200 | 400, 404 |
-| DELETE | `/api/animais/:id` | 204 | 400, 404 |
+## Base URL
 
-## Convenções
+| Ambiente | URL |
+|---|---|
+| Produção | `https://clinica-patas-cia.onrender.com/api` |
+| Desenvolvimento | `http://localhost:3000/api` |
 
-1. **JSON em `snake_case`**, igual ao banco (`tutor_id`, `criado_em`, `total_animais`). Não há tradução para camelCase.
-2. **`peso` volta como string** (`"5.20"`): o `NUMERIC` do Postgres é lido assim pelo `pg`. No front, use `Number(peso)` para exibir/editar.
-3. **`telefone` e `cep` são armazenados só com dígitos** (`85999999999`, `60000000`). A API aceita máscara na entrada e normaliza; a máscara é responsabilidade do front na exibição.
-4. **`uf` é devolvida em maiúscula** (`CE`).
-5. **Campos opcionais vazios viram `NULL`**, não string vazia.
-6. **`PUT` é substituição completa:** envie todos os campos obrigatórios do `POST`, mesmo os que não mudaram.
-7. Campos desconhecidos no corpo são ignorados.
-8. Datas em ISO 8601 (`2026-11-17T18:05:00.000Z`).
+No front, configure a variável de ambiente `VITE_API_URL` e nunca escreva a URL na mão.
 
-## Tutores
+## Comece por aqui (5 minutos)
 
-### Campos
+1. Abra o `/api-docs` e explore as rotas com o Try it out.
+2. Exemplos em JavaScript (com `VITE_API_URL` configurado):
 
-| Campo | Obrigatório | Regra |
+```js
+const api = import.meta.env.VITE_API_URL;
+
+// listar tutores (já vem com total_animais)
+const tutores = await fetch(`${api}/tutores`).then((resposta) => resposta.json());
+
+// cadastrar tutor com máscara — a API normaliza
+await fetch(`${api}/tutores`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ nome: "Ana Beatriz", telefone: "(85) 99999-9999" }),
+});
+
+// animais de um tutor (tela "animais do tutor")
+const animais = await fetch(`${api}/tutores/1/animais`).then((resposta) => resposta.json());
+
+// excluir
+await fetch(`${api}/tutores/7`, { method: "DELETE" });
+```
+
+## Mapa dos endpoints
+
+| Método | Rota | O que faz |
 |---|---|---|
-| `nome` | sim | 3–120 caracteres |
-| `telefone` | sim | 10 ou 11 dígitos (aceita máscara); DDD 11–99; celular começa com 9; fixo começa com 2–5 |
-| `email` | não | e-mail válido, ≤120 |
-| `cep` | não | 8 dígitos (aceita `00000-000`) |
-| `logradouro` | não | ≤150 |
-| `numero` | não | ≤20 |
-| `complemento` | não | ≤100 |
-| `bairro` | não | ≤100 |
-| `cidade` | não | ≤100 |
-| `uf` | não | 2 letras |
+| GET | `/` | nome do serviço, versão e commit publicado |
+| GET | `/health` | status da API e do banco |
+| GET | `/api/tutores?busca=` | lista tutores com `total_animais` |
+| GET | `/api/tutores/:id` | busca um tutor |
+| GET | `/api/tutores/:id/animais` | animais de um tutor |
+| POST | `/api/tutores` | cadastra tutor (201 + `Location`) |
+| PUT | `/api/tutores/:id` | atualiza tutor |
+| DELETE | `/api/tutores/:id` | exclui tutor (**409 se tiver animais**) |
+| GET | `/api/animais?tutorId=` | lista animais (todos ou de um tutor) |
+| GET | `/api/animais/:id` | busca um animal |
+| POST | `/api/animais` | cadastra animal (201 + `Location`) |
+| PUT | `/api/animais/:id` | atualiza animal |
+| DELETE | `/api/animais/:id` | exclui animal |
 
-### `GET /api/tutores`
+Sem autenticação. CORS liberado para a URL do front (`CORS_ORIGINS` no Render).
 
-Busca opcional por nome **ou telefone** (só os dígitos já funcionam). Retorna `total_animais` de cada tutor.
+## Armadilhas que valem saber antes de codar
 
-```http
-GET /api/tutores?busca=beatriz
-```
-
-**200**
-
-```json
-[
-  {
-    "id": 1,
-    "nome": "Beatriz Abreu",
-    "telefone": "8599000000",
-    "email": "anabeatriz.abreu@gmail.com",
-    "cep": "60000000",
-    "logradouro": "Rua Teste",
-    "numero": "100",
-    "complemento": "BL A",
-    "bairro": "Aldeota",
-    "cidade": "Fortaleza",
-    "uf": "CE",
-    "criado_em": "2026-11-17T18:00:00.000Z",
-    "atualizado_em": null,
-    "total_animais": 3
-  }
-]
-```
-
-### `GET /api/tutores/:id`
-
-**200** — objeto do tutor (sem `total_animais`).
-**404** — `Tutor não encontrado.`
-
-### `GET /api/tutores/:id/animais`
-
-Usar esta rota na tela "animais do tutor": uma chamada só, e o 404 distingue "tutor não existe" de "tutor sem animais".
-
-**200** — array de animais; **404** se o tutor não existir.
-
-### `POST /api/tutores`
-
-```json
-{
-  "nome": "Ana Beatriz",
-  "telefone": "(85) 99999-9999",
-  "email": "",
-  "cep": "60.000-000",
-  "cidade": "Fortaleza",
-  "uf": "ce"
-}
-```
-
-**201 Created** + header `Location: /api/tutores/7`
-
-```json
-{
-  "id": 7,
-  "nome": "Ana Beatriz",
-  "telefone": "85999999999",
-  "email": null,
-  "cep": "60000000",
-  "logradouro": null,
-  "numero": null,
-  "complemento": null,
-  "bairro": null,
-  "cidade": "Fortaleza",
-  "uf": "CE",
-  "criado_em": "2026-11-17T18:05:00.000Z",
-  "atualizado_em": null
-}
-```
-
-### `PUT /api/tutores/:id`
-
-Corpo completo (exemplo):
-
-```json
-{
-  "nome": "Ana Beatriz Lima",
-  "telefone": "8532221100",
-  "cidade": "Fortaleza",
-  "uf": "CE"
-}
-```
-
-**200** com o tutor atualizado; **404** se não existir. `atualizado_em` é preenchido pelo servidor.
-
-### `DELETE /api/tutores/:id`
-
-**204 No Content** (sem corpo) quando o tutor não tem animais.
-
-**409 Conflict** quando ainda tem:
-
-```json
-{
-  "erro": {
-    "codigo": "CONFLITO",
-    "mensagem": "Este tutor possui 3 animais cadastrados e não pode ser excluído."
-  }
-}
-```
-
-## Animais
-
-### Campos
-
-| Campo | Obrigatório | Regra |
-|---|---|---|
-| `nome` | sim | 2–100 caracteres |
-| `especie` | sim | 2–50 caracteres |
-| `raca` | não | ≤80 |
-| `sexo` | sim | `M` ou `F` (aceita minúscula) |
-| `idade` | não | inteiro 0–100 (anos) |
-| `peso` | não | número > 0 e ≤ 999.99 (kg); aceita vírgula decimal (`12,5`) |
-| `tutor_id` | sim | inteiro > 0 e **tutor existente** |
-
-### `GET /api/animais`
-
-Com `?tutorId=1`, filtra; sem o parâmetro, lista todos.
-
-```http
-GET /api/animais?tutorId=1
-```
-
-**200**
-
-```json
-[
-  {
-    "id": 1,
-    "nome": "Clarke",
-    "especie": "Felino",
-    "raca": "SRD",
-    "sexo": "F",
-    "idade": 6,
-    "peso": "5.20",
-    "tutor_id": 1,
-    "criado_em": "2026-11-17T18:00:00.000Z",
-    "atualizado_em": null
-  }
-]
-```
-
-### `GET /api/animais/:id`
-
-**200** ou **404** `Animal não encontrado.`
-
-### `POST /api/animais`
-
-```json
-{
-  "nome": "Thor",
-  "especie": "Cão",
-  "raca": "Labrador",
-  "sexo": "m",
-  "idade": 3,
-  "peso": 28.4,
-  "tutor_id": 1
-}
-```
-
-**201 Created** + `Location: /api/animais/9`
-
-```json
-{
-  "id": 9,
-  "nome": "Thor",
-  "especie": "Cão",
-  "raca": "Labrador",
-  "sexo": "M",
-  "idade": 3,
-  "peso": "28.40",
-  "tutor_id": 1,
-  "criado_em": "2026-11-17T18:10:00.000Z",
-  "atualizado_em": null
-}
-```
-
-**400** com `campo: "tutor_id"` e mensagem `Tutor não encontrado.` se o tutor não existir.
-
-### `PUT /api/animais/:id`
-
-Corpo completo, mesmas regras do `POST`. **200** com o animal atualizado ou **404**.
-
-### `DELETE /api/animais/:id`
-
-**204 No Content**; **404** se não existir.
-
-## Formato de erro
-
-Todos os erros seguem o mesmo envelope:
+1. **Campos em `snake_case`**, igual ao banco: `tutor_id`, `criado_em`, `total_animais`.
+2. **`peso` vem como string** (`"5.20"`) — o Postgres devolve `NUMERIC` assim. Use `Number(peso)` para exibir/editar. **Para enviar**, pode mandar número, `"12.5"` ou `"12,5"` (com vírgula).
+3. **`telefone` e `cep` voltam só com dígitos** (`85999999999`, `60000000`). Para enviar, pode usar máscara — a API aceita e normaliza. A máscara na exibição é com o front.
+4. **Campo opcional vazio vira `null`**, não string vazia.
+5. **`PUT` é substituição completa:** mande todos os campos obrigatórios, mesmo os que não mudaram.
+6. **Erros seguem sempre o mesmo envelope**, e a validação lista **todos** os campos de uma vez — dá para marcar cada input do formulário:
 
 ```json
 {
@@ -260,47 +86,20 @@ Todos os erros seguem o mesmo envelope:
 }
 ```
 
-`campos` só aparece quando há erro de validação, e lista **todos** os problemas de uma vez — o front pode marcar cada input.
+7. **Excluir tutor com animais retorna 409** com a contagem na mensagem — é a regra central do cenário; mostre a mensagem para o usuário.
+8. **204 não tem corpo**; **201 vem com header `Location`** apontando o recurso criado.
 
-| Status | `codigo` | Significado |
-|---|---|---|
-| 400 | `VALIDACAO` | corpo, query ou parâmetro inválido |
-| 400 | `JSON_INVALIDO` | JSON malformado no corpo |
-| 404 | `NAO_ENCONTRADO` | registro ou rota não existe |
-| 409 | `CONFLITO` | exclusão de tutor com animais |
-| 500 | `ERRO_INTERNO` | falha inesperada (sem detalhes técnicos) |
-| 503 | — | `/health` com banco indisponível |
+## Resumo das regras de validação
 
-## Exemplos rápidos (PowerShell / Insomnia)
+**Tutor:** `nome` (3–120) e `telefone` obrigatórios; telefone com 10/11 dígitos, DDD válido, celular começando em 9 e fixo em 2–5; e-mail válido; CEP com 8 dígitos; UF com 2 letras.
 
-```powershell
-# listar tutores
-curl.exe http://localhost:3000/api/tutores
+**Animal:** `nome` (2–100), `especie` (2–50), `sexo` (`M`/`F`, aceita minúscula) e `tutor_id` obrigatórios; `idade` inteiro 0–100; `peso` > 0 e ≤ 999,99; o `tutor_id` precisa existir (senão 400 apontando o campo).
 
-# criar tutor
-curl.exe -X POST http://localhost:3000/api/tutores `
-  -H "Content-Type: application/json" `
-  -d '{"nome":"Ana Beatriz","telefone":"(85) 99999-9999"}'
-
-# animais de um tutor
-curl.exe "http://localhost:3000/api/animais?tutorId=1"
-
-# excluir tutor com animais (retorna 409)
-curl.exe -i -X DELETE http://localhost:3000/api/tutores/1
-```
-
-## Configuração no front
-
-```env
-VITE_API_URL=http://localhost:3000/api
-```
-
-Em produção, trocar pela URL do Render + `/api`. O back libera CORS via `CORS_ORIGINS` (no Render, incluir a URL da Vercel sem barra final).
-
-## Código correspondente (links para o PDF)
+## Links por camada (para o PDF)
 
 | Camada | Arquivo |
 |---|---|
+| Contrato | `backend/openapi.yaml` |
 | Rotas | `backend/src/routes/index.js`, `tutorRoutes.js`, `animalRoutes.js` |
 | Controllers | `backend/src/controllers/tutorController.js`, `animalController.js` |
 | Regras de negócio | `backend/src/services/tutorService.js`, `animalService.js` |
@@ -308,4 +107,4 @@ Em produção, trocar pela URL do Render + `/api`. O back libera CORS via `CORS_
 | Validação | `backend/src/validators/tutorSchema.js`, `animalSchema.js`, `campos.js`, `parametros.js` |
 | Erros | `backend/src/errors/AppError.js`, `backend/src/middlewares/errorHandler.js` |
 | Banco | `backend/database/001_schema.sql`, `002_constraints.sql` |
-| Testes | `backend/tests/tutorService.test.js`, `animalService.test.js`, `api.test.js` |
+| Testes | `backend/tests/` |

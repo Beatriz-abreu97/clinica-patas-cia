@@ -1,0 +1,686 @@
+openapi: 3.1.0
+info:
+  title: Clínica Patas & Cia - API
+  version: 1.0.0
+  description: |
+    API REST da clínica veterinária Patas & Cia: cadastro de tutores e dos
+    animais de cada tutor.
+
+    Cobertura: as 8 operações de CRUD exigidas pelo trabalho (tutor e animal),
+    mais a listagem de animais por tutor. Sem autenticação. Documentação
+    interativa publicada em /api-docs.
+servers:
+  - url: https://clinica-patas-cia.onrender.com
+    description: produção (Render)
+  - url: http://localhost:3000
+    description: desenvolvimento local
+tags:
+  - name: Infra
+    description: Serviço e health check
+  - name: Tutores
+    description: Cadastro de tutores
+  - name: Animais
+    description: Cadastro de animais
+paths:
+  /:
+    get:
+      tags: [Infra]
+      summary: Informações do serviço
+      description: Devolve o nome, a versão e o commit publicado no Render.
+      operationId: informacoesServico
+      responses:
+        "200":
+          description: Serviço no ar.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Raiz"
+              example:
+                servico: "Clínica Patas & Cia — API"
+                versao: "1.0.0"
+                commit: "150988f"
+                contratos: "backend/API.md"
+  /health:
+    get:
+      tags: [Infra]
+      summary: Health check
+      description: Consulta o banco e responde 503 se ele estiver indisponível.
+      operationId: health
+      responses:
+        "200":
+          description: API e banco no ar.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Saude"
+              example:
+                status: ok
+                banco: ok
+        "503":
+          description: Banco indisponível.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Saude"
+              example:
+                status: degradado
+                banco: indisponivel
+  /api/tutores:
+    get:
+      tags: [Tutores]
+      summary: Lista tutores
+      description: Cada tutor vem com total_animais, calculado no próprio banco.
+      operationId: listarTutores
+      parameters:
+        - $ref: "#/components/parameters/Busca"
+      responses:
+        "200":
+          description: Tutores cadastrados, em ordem alfabética de nome.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TutorNaLista"
+              example:
+                - id: 1
+                  nome: Beatriz Abreu
+                  telefone: "8599000000"
+                  email: anabeatriz.abreu@gmail.com
+                  cep: "60000000"
+                  logradouro: Rua Teste
+                  numero: "100"
+                  complemento: BL A
+                  bairro: Aldeota
+                  cidade: Fortaleza
+                  uf: CE
+                  criado_em: "2026-11-17T18:00:00.000Z"
+                  atualizado_em: null
+                  total_animais: 3
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+    post:
+      tags: [Tutores]
+      summary: Cadastra tutor
+      operationId: criarTutor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TutorEntrada"
+            examples:
+              comMascara:
+                summary: Telefone e CEP mascarados, e-mail vazio
+                value:
+                  nome: "  Ana Beatriz  "
+                  telefone: "(85) 99999-9999"
+                  email: ""
+                  cep: "60.000-000"
+                  cidade: Fortaleza
+                  uf: ce
+      responses:
+        "201":
+          description: Tutor criado com os valores normalizados.
+          headers:
+            Location:
+              description: URL do recurso criado.
+              schema:
+                type: string
+              example: /api/tutores/7
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tutor"
+              example:
+                id: 7
+                nome: Ana Beatriz
+                telefone: "85999999999"
+                email: null
+                cep: "60000000"
+                logradouro: null
+                numero: null
+                complemento: null
+                bairro: null
+                cidade: Fortaleza
+                uf: CE
+                criado_em: "2026-11-17T18:05:00.000Z"
+                atualizado_em: null
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+  /api/tutores/{id}:
+    get:
+      tags: [Tutores]
+      summary: Busca tutor por id
+      operationId: buscarTutor
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Tutor encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tutor"
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "404":
+          $ref: "#/components/responses/NaoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+    put:
+      tags: [Tutores]
+      summary: Atualiza tutor
+      description: Substituição completa; envie todos os campos obrigatórios, mesmo os que não mudaram.
+      operationId: atualizarTutor
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TutorEntrada"
+            example:
+              nome: Beatriz Abreu Lima
+              telefone: "8532221100"
+              cidade: Fortaleza
+              uf: CE
+      responses:
+        "200":
+          description: Tutor atualizado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tutor"
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "404":
+          $ref: "#/components/responses/NaoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+    delete:
+      tags: [Tutores]
+      summary: Exclui tutor
+      description: Regra central do cenário; exclusão bloqueada enquanto o tutor tiver animais.
+      operationId: excluirTutor
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Tutor excluído. Sem corpo de resposta.
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "404":
+          $ref: "#/components/responses/NaoEncontrado"
+        "409":
+          $ref: "#/components/responses/Conflito"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+  /api/tutores/{id}/animais:
+    get:
+      tags: [Tutores]
+      summary: Lista os animais de um tutor
+      description: Rota da tela "animais do tutor"; devolve 404 quando o tutor não existe.
+      operationId: listarAnimaisDoTutor
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Animais do tutor, em ordem alfabética de nome.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Animal"
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "404":
+          $ref: "#/components/responses/NaoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+  /api/animais:
+    get:
+      tags: [Animais]
+      summary: Lista animais
+      description: Sem tutorId, lista todos; com tutorId, filtra os animais do tutor.
+      operationId: listarAnimais
+      parameters:
+        - $ref: "#/components/parameters/TutorId"
+      responses:
+        "200":
+          description: Animais cadastrados, em ordem alfabética de nome.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Animal"
+              example:
+                - id: 1
+                  nome: Clarke
+                  especie: Felino
+                  raca: SRD
+                  sexo: F
+                  idade: 6
+                  peso: "5.20"
+                  tutor_id: 1
+                  criado_em: "2026-11-17T18:00:00.000Z"
+                  atualizado_em: null
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+    post:
+      tags: [Animais]
+      summary: Cadastra animal
+      operationId: criarAnimal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnimalEntrada"
+            example:
+              nome: Thor
+              especie: Cão
+              raca: Labrador
+              sexo: m
+              idade: 3
+              peso: "28,4"
+              tutor_id: 1
+      responses:
+        "201":
+          description: Animal criado com os valores normalizados.
+          headers:
+            Location:
+              description: URL do recurso criado.
+              schema:
+                type: string
+              example: /api/animais/9
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Animal"
+              example:
+                id: 9
+                nome: Thor
+                especie: Cão
+                raca: Labrador
+                sexo: M
+                idade: 3
+                peso: "28.40"
+                tutor_id: 1
+                criado_em: "2026-11-17T18:10:00.000Z"
+                atualizado_em: null
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+  /api/animais/{id}:
+    get:
+      tags: [Animais]
+      summary: Busca animal por id
+      operationId: buscarAnimal
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Animal encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Animal"
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "404":
+          $ref: "#/components/responses/NaoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+    put:
+      tags: [Animais]
+      summary: Atualiza animal
+      description: Substituição completa; envie todos os campos obrigatórios, mesmo os que não mudaram.
+      operationId: atualizarAnimal
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnimalEntrada"
+            example:
+              nome: Thor
+              especie: Cão
+              sexo: M
+              idade: 4
+              peso: 29.1
+              tutor_id: 1
+      responses:
+        "200":
+          description: Animal atualizado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Animal"
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "404":
+          $ref: "#/components/responses/NaoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+    delete:
+      tags: [Animais]
+      summary: Exclui animal
+      operationId: excluirAnimal
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Animal excluído. Sem corpo de resposta.
+        "400":
+          $ref: "#/components/responses/Validacao"
+        "404":
+          $ref: "#/components/responses/NaoEncontrado"
+        "500":
+          $ref: "#/components/responses/ErroInterno"
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      description: Identificador do registro.
+      schema:
+        type: integer
+        minimum: 1
+      example: 1
+    Busca:
+      name: busca
+      in: query
+      required: false
+      description: Filtra por nome ou telefone; telefone aceita máscara ou só dígitos.
+      schema:
+        type: string
+        maxLength: 100
+      example: beatriz
+    TutorId:
+      name: tutorId
+      in: query
+      required: false
+      description: Filtra os animais de um tutor específico.
+      schema:
+        type: integer
+        minimum: 1
+      example: 1
+  responses:
+    Validacao:
+      description: Dados inválidos. Todos os campos com problema vêm listados de uma vez.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Erro"
+          examples:
+            camposObrigatoriosETelefone:
+              summary: Nome curto e telefone inválido
+              value:
+                erro:
+                  codigo: VALIDACAO
+                  mensagem: "Dados inválidos."
+                  campos:
+                    - campo: nome
+                      mensagem: "Nome deve ter ao menos 3 caracteres."
+                    - campo: telefone
+                      mensagem: "Telefone inválido. Use DDD + 8 ou 9 dígitos, ex.: (85) 99999-9999."
+            tutorInexistente:
+              summary: Animal criado com tutor_id que não existe
+              value:
+                erro:
+                  codigo: VALIDACAO
+                  mensagem: "Dados inválidos."
+                  campos:
+                    - campo: tutor_id
+                      mensagem: "Tutor não encontrado."
+    NaoEncontrado:
+      description: Registro não existe.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Erro"
+          examples:
+            tutor:
+              value:
+                erro:
+                  codigo: NAO_ENCONTRADO
+                  mensagem: "Tutor não encontrado."
+            animal:
+              value:
+                erro:
+                  codigo: NAO_ENCONTRADO
+                  mensagem: "Animal não encontrado."
+    Conflito:
+      description: Tutor com animais cadastrados não pode ser excluído.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Erro"
+          example:
+            erro:
+              codigo: CONFLITO
+              mensagem: "Este tutor possui 3 animais cadastrados e não pode ser excluído."
+    ErroInterno:
+      description: Falha inesperada. Detalhes técnicos ficam apenas no log do servidor.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Erro"
+          example:
+            erro:
+              codigo: ERRO_INTERNO
+              mensagem: "Erro interno do servidor. Tente novamente."
+  schemas:
+    Raiz:
+      type: object
+      properties:
+        servico:
+          type: string
+        versao:
+          type: string
+        commit:
+          type: string
+          description: Hash do commit publicado no Render; "local" fora do Render.
+        contratos:
+          type: string
+    Saude:
+      type: object
+      required: [status, banco]
+      properties:
+        status:
+          type: string
+          enum: [ok, degradado]
+        banco:
+          type: string
+          enum: [ok, indisponivel]
+    TutorEntrada:
+      type: object
+      additionalProperties: false
+      required: [nome, telefone]
+      properties:
+        nome:
+          type: string
+          minLength: 3
+          maxLength: 120
+          description: Nome completo do tutor.
+        telefone:
+          type: string
+          maxLength: 15
+          description: "Aceita (85) 99999-9999, 85 3222-1100 ou só dígitos. Valida DDD, celular começando em 9 e fixo em 2-5; armazena só dígitos."
+          example: "(85) 99999-9999"
+        email:
+          type: [string, "null"]
+          maxLength: 120
+          description: Vazio ou ausente vira null.
+        cep:
+          type: [string, "null"]
+          maxLength: 9
+          description: "Aceita 00000-000; normaliza para 8 dígitos."
+        logradouro:
+          type: [string, "null"]
+          maxLength: 150
+        numero:
+          type: [string, "null"]
+          maxLength: 20
+        complemento:
+          type: [string, "null"]
+          maxLength: 100
+        bairro:
+          type: [string, "null"]
+          maxLength: 100
+        cidade:
+          type: [string, "null"]
+          maxLength: 100
+        uf:
+          type: [string, "null"]
+          maxLength: 2
+          description: Duas letras; devolvida em maiúsculas.
+    Tutor:
+      type: object
+      required: [id, nome, telefone, criado_em]
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        telefone:
+          type: string
+          pattern: "^[0-9]{10,11}$"
+          description: Armazenado só com dígitos; a máscara é responsabilidade do front.
+        email:
+          type: [string, "null"]
+        cep:
+          type: [string, "null"]
+          pattern: "^[0-9]{8}$"
+        logradouro:
+          type: [string, "null"]
+        numero:
+          type: [string, "null"]
+        complemento:
+          type: [string, "null"]
+        bairro:
+          type: [string, "null"]
+        cidade:
+          type: [string, "null"]
+        uf:
+          type: [string, "null"]
+        criado_em:
+          type: string
+          format: date-time
+        atualizado_em:
+          type: [string, "null"]
+          format: date-time
+    TutorNaLista:
+      allOf:
+        - $ref: "#/components/schemas/Tutor"
+        - type: object
+          required: [total_animais]
+          properties:
+            total_animais:
+              type: integer
+              minimum: 0
+              description: Quantidade de animais do tutor, calculada na consulta.
+    AnimalEntrada:
+      type: object
+      additionalProperties: false
+      required: [nome, especie, sexo, tutor_id]
+      properties:
+        nome:
+          type: string
+          minLength: 2
+          maxLength: 100
+        especie:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Gato
+        raca:
+          type: [string, "null"]
+          maxLength: 80
+        sexo:
+          type: string
+          enum: [M, F]
+          description: Aceita minúscula; a resposta devolve maiúscula.
+        idade:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Idade em anos.
+        peso:
+          type: [number, string]
+          exclusiveMinimum: 0
+          maximum: 999.99
+          description: "Aceita vírgula decimal (12,5) ou ponto (12.5)."
+        tutor_id:
+          type: integer
+          minimum: 1
+          description: Precisa existir; caso contrário, 400 com campo tutor_id.
+    Animal:
+      type: object
+      required: [id, nome, especie, sexo, tutor_id, criado_em]
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        especie:
+          type: string
+        raca:
+          type: [string, "null"]
+        sexo:
+          type: string
+          enum: [M, F]
+        idade:
+          type: [integer, "null"]
+        peso:
+          type: [string, "null"]
+          pattern: "^[0-9]+\\.[0-9]{2}$"
+          description: "O tipo NUMERIC do Postgres volta como string. Converta com Number(peso) para exibir."
+        tutor_id:
+          type: integer
+        criado_em:
+          type: string
+          format: date-time
+        atualizado_em:
+          type: [string, "null"]
+          format: date-time
+    Erro:
+      type: object
+      required: [erro]
+      properties:
+        erro:
+          type: object
+          required: [codigo, mensagem]
+          properties:
+            codigo:
+              type: string
+              enum: [VALIDACAO, JSON_INVALIDO, NAO_ENCONTRADO, CONFLITO, ERRO_INTERNO]
+            mensagem:
+              type: string
+            campos:
+              type: array
+              description: Presente apenas em erros de validação; lista todos os campos inválidos de uma vez.
+              items:
+                $ref: "#/components/schemas/CampoInvalido"
+    CampoInvalido:
+      type: object
+      required: [campo, mensagem]
+      properties:
+        campo:
+          type: string
+        mensagem:
+          type: string

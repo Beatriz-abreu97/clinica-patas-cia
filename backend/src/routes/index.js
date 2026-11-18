@@ -1,7 +1,13 @@
+const fs = require("fs");
+const path = require("path");
 const { Router } = require("express");
+const YAML = require("yaml");
+const swaggerUi = require("swagger-ui-express");
 const pacote = require("../../package.json");
 const { criarTutorRoutes } = require("./tutorRoutes");
 const { criarAnimalRoutes } = require("./animalRoutes");
+
+const spec = YAML.parse(fs.readFileSync(path.resolve(__dirname, "../../openapi.yaml"), "utf8"));
 
 function criarRotas({ db, tutorService, animalService }) {
   const rotas = Router();
@@ -24,6 +30,9 @@ function criarRotas({ db, tutorService, animalService }) {
       res.status(503).json({ status: "degradado", banco: "indisponivel" });
     }
   });
+
+  rotas.use("/api-docs", swaggerUi.serve, swaggerUi.setup(spec));
+  rotas.get("/api-docs.json", (req, res) => res.json(spec));
 
   rotas.use("/api/tutores", criarTutorRoutes({ tutorService }));
   rotas.use("/api/animais", criarAnimalRoutes({ animalService }));

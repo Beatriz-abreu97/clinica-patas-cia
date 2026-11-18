@@ -37,6 +37,7 @@ Use Insomnia/Postman (melhor: mostra método, URL, status e corpo na mesma tela)
 | `12-supabase-tabelas.png` | Supabase → Table Editor → `tutor` e `animal` | dados e relação `tutor_id` | 8 |
 | `13-render-deploy.png` | Render → Deploys | `Live`, commit e data | 5, 8 |
 | `14-actions-keep-alive.png` | GitHub → Actions → **Keep-alive da API** → run verde | workflow de ping ativo | 5, 8 |
+| `15-swagger-ui.png` | `https://clinica-patas-cia.onrender.com/api-docs` | Swagger UI com as 13 operações; use **Try it out** numa rota | 7 |
 
 O keep-alive roda no GitHub Actions (`.github/workflows/keep-alive.yml`). Capture também a aba Actions com um run concluído: isso comprova que a aplicação é mantida acordada no plano gratuito.
 
@@ -138,7 +139,9 @@ Base: `https://github.com/Beatriz-abreu97/clinica-patas-cia/blob/main/`
 
 | O que | Caminho |
 |---|---|
-| Contrato da API | `backend/API.md` |
+| Contrato OpenAPI | `backend/openapi.yaml` |
+| Swagger UI publicada | `https://clinica-patas-cia.onrender.com/api-docs` |
+| Resumo amigável | `backend/API.md` |
 | Plano | `SPEC.md` |
 | Rotas | `backend/src/routes/index.js` |
 | Controller | `backend/src/controllers/tutorController.js` |

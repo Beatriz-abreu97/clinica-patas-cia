@@ -89,13 +89,13 @@ Conferir: <http://localhost:3000/health> → `{"status":"ok","banco":"ok"}`
 
 ## Endpoints
 
-As 8 operações exigidas pelo trabalho estão implementadas (criar, listar, atualizar e excluir para tutor e animal), além da listagem de animais por tutor. Detalhes, exemplos e regras: [`backend/API.md`](backend/API.md).
+As 8 operações exigidas pelo trabalho estão implementadas (criar, listar, atualizar e excluir para tutor e animal), além da listagem de animais por tutor. O contrato formal é a especificação OpenAPI 3.1 ([`backend/openapi.yaml`](backend/openapi.yaml)), navegável em **`/api-docs`** (Swagger UI) e exportável em `/api-docs.json`. Resumo amigável: [`backend/API.md`](backend/API.md).
 
 | Recurso | Rotas |
 |---|---|
 | Tutores | `GET/POST /api/tutores`, `GET/PUT/DELETE /api/tutores/:id`, `GET /api/tutores/:id/animais` |
 | Animais | `GET/POST /api/animais`, `GET/PUT/DELETE /api/animais/:id` |
-| Infra | `GET /health` |
+| Infra | `GET /health`, `GET /api-docs` (Swagger UI), `GET /api-docs.json` |
 
 Regras principais: campos obrigatórios, telefone válido, e **não permitir excluir tutor que ainda tenha animais** (409).
 
