@@ -136,8 +136,8 @@ export function FormularioAnimalPage() {
   if (carregando) {
     return (
       <div className="space-y-4" aria-busy="true">
-        <div className="h-7 w-52 animate-pulse rounded-lg bg-stone-200" />
-        <div className="h-72 animate-pulse rounded-2xl border border-stone-200 bg-white" />
+        <div className="h-7 w-52 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
+        <div className="h-72 animate-pulse rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900" />
       </div>
     );
   }
@@ -154,8 +154,8 @@ export function FormularioAnimalPage() {
         descricao={erroCarregamento.mensagem}
         acao={
           <div className="flex flex-wrap justify-center gap-2.5">
-            <Botao to="/tutores" variante="secundario" icone={ArrowLeft}>
-              Voltar para o balcão
+            <Botao to="/" variante="secundario" icone={ArrowLeft}>
+              Voltar para o início
             </Botao>
             {!erroCarregamento.naoEncontrado && (
               <Botao icone={RefreshCw} onClick={() => carregarDados()}>
@@ -192,24 +192,26 @@ export function FormularioAnimalPage() {
       <div>
         <Link
           to={rotaRetorno}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-800 hover:text-teal-950 hover:underline transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-800 hover:text-teal-950 dark:text-teal-300 dark:hover:text-teal-200 hover:underline transition-colors"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           <span>
-            {rotaRetorno === "/animais"
-              ? "Voltar para a lista de animais"
-              : "Voltar para a ficha do tutor"}
+            {rotaRetorno === "/"
+              ? "Voltar para o início"
+              : rotaRetorno === "/animais"
+                ? "Voltar para a lista de animais"
+                : "Voltar para a ficha do tutor"}
           </span>
         </Link>
 
-        <h1 className="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900">
+        <h1 className="mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100">
           {modoEdicao
             ? `Editar Animal — ${animalInicial?.nome}`
             : tutorSelecionado
               ? `Novo Animal de ${tutorSelecionado.nome}`
               : "Novo Cadastro de Animal"}
         </h1>
-        <p className="mt-1 text-sm text-stone-600">
+        <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
           {modoEdicao
             ? "Atualize os dados do paciente ou transfira-o para outro tutor responsável."
             : "Informe os dados do paciente animal atendido na recepção."}

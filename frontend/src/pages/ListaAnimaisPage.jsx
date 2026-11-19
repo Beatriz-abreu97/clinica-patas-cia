@@ -139,10 +139,10 @@ export function ListaAnimaisPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100">
             Pacientes Animais
           </h1>
-          <p className="mt-1 text-sm text-stone-600">
+          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
             Consulte todos os animais atendidos por nome, espécie, raça, tutor ou telefone.
           </p>
         </div>
@@ -176,7 +176,7 @@ export function ListaAnimaisPage() {
 
       <div className="space-y-2">
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-stone-600">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-stone-600 dark:text-stone-400">
             <Search className="h-4 w-4" aria-hidden="true" />
           </div>
           <input
@@ -186,7 +186,7 @@ export function ListaAnimaisPage() {
             onChange={(e) => atualizarFiltro(e.target.value)}
             aria-label="Filtrar animais por nome, espécie, raça, tutor ou telefone"
             placeholder="Filtrar por pet, espécie, raça, tutor ou telefone..."
-            className="min-h-12 w-full rounded-2xl border border-stone-300 bg-white pl-11 pr-16 py-3 text-sm text-stone-900 placeholder:text-[#66605b] sombra-cartao transition-colors focus:border-teal-700 focus:outline-none focus:ring-3 focus:ring-teal-700/20"
+            className="min-h-12 w-full rounded-2xl border border-borda-forte bg-superficie-campo pl-11 pr-16 py-3 text-sm text-stone-900 dark:text-stone-100 placeholder:text-[#66605b] dark:placeholder:text-stone-400 sombra-cartao transition-colors focus:border-teal-700 dark:focus:bg-superficie-elevada dark:focus:border-teal-400 focus:outline-none focus:ring-3 focus:ring-teal-700/20 dark:focus:ring-teal-400/25"
           />
           {filtro ? (
             <button
@@ -196,14 +196,14 @@ export function ListaAnimaisPage() {
                 campoBuscaRef.current?.focus();
               }}
               aria-label="Limpar filtro"
-              className="absolute inset-y-0 right-2 my-auto flex h-9 w-9 items-center justify-center rounded-xl text-stone-600 hover:bg-stone-100 hover:text-stone-900 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+              className="absolute inset-y-0 right-2 my-auto flex h-9 w-9 items-center justify-center rounded-xl text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 dark:focus-visible:ring-teal-400"
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
           ) : (
             <kbd
               aria-hidden="true"
-              className="pointer-events-none hidden sm:inline-flex absolute inset-y-0 right-3.5 my-auto h-6 items-center rounded-md border border-stone-200 bg-stone-100 px-2 text-xs font-semibold text-stone-600"
+              className="pointer-events-none hidden sm:inline-flex absolute inset-y-0 right-3.5 my-auto h-6 items-center rounded-md border border-borda bg-superficie-sutil px-2 text-xs font-semibold text-stone-600 dark:text-stone-400"
             >
               /
             </kbd>
@@ -211,7 +211,7 @@ export function ListaAnimaisPage() {
         </div>
 
         {!carregando && !erroConexao && (
-          <div className="px-1 text-xs font-medium text-stone-600 numeros-tabulares">
+          <div className="px-1 text-xs font-medium text-stone-600 dark:text-stone-400 numeros-tabulares">
             {animaisFiltrados.length === 1
               ? "1 paciente exibido"
               : `${animaisFiltrados.length} pacientes exibidos`}
@@ -224,7 +224,7 @@ export function ListaAnimaisPage() {
           {[1, 2, 3].map((item) => (
             <div
               key={item}
-              className="h-24 animate-pulse rounded-2xl border border-stone-200 bg-white p-5"
+              className="h-24 animate-pulse rounded-2xl border border-borda bg-superficie p-5"
             />
           ))}
         </div>

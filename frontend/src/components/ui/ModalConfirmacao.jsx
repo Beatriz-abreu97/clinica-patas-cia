@@ -71,12 +71,12 @@ export function ModalConfirmacao({
 
   const IconeCabecalho = modoProtegido ? ShieldAlert : AlertTriangle;
   const corIcone = modoProtegido
-    ? "bg-amber-100 text-amber-800 border border-amber-200"
-    : "bg-rose-100 text-rose-800 border border-rose-200";
+    ? "bg-amber-100 text-amber-800 border border-amber-200 dark:bg-amber-950/70 dark:text-amber-200 dark:border-amber-800"
+    : "bg-rose-100 text-rose-800 border border-rose-200 dark:bg-rose-950/70 dark:text-rose-200 dark:border-rose-800";
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/50 backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/65 backdrop-blur-[2px]"
       onClick={() => !carregando && aoCancelar()}
     >
       <div
@@ -85,7 +85,7 @@ export function ModalConfirmacao({
         aria-modal="true"
         aria-labelledby="modal-confirmacao-titulo"
         aria-describedby="modal-confirmacao-descricao"
-        className="w-full max-w-md rounded-2xl bg-white border border-stone-200 p-6 sombra-elevada"
+        className="w-full max-w-md rounded-2xl bg-superficie-elevada border border-borda-forte p-6 sombra-elevada"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-4">
@@ -93,10 +93,16 @@ export function ModalConfirmacao({
             <IconeCabecalho className="h-5 w-5" aria-hidden="true" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 id="modal-confirmacao-titulo" className="text-lg font-bold text-stone-900">
+            <h2
+              id="modal-confirmacao-titulo"
+              className="text-lg font-bold text-stone-900 dark:text-stone-100"
+            >
               {titulo}
             </h2>
-            <p id="modal-confirmacao-descricao" className="mt-1.5 text-sm text-stone-700 leading-relaxed">
+            <p
+              id="modal-confirmacao-descricao"
+              className="mt-1.5 text-sm text-stone-700 dark:text-stone-300 leading-relaxed"
+            >
               {descricao}
             </p>
           </div>
@@ -120,7 +126,7 @@ export function ModalConfirmacao({
               </Botao>
             </div>
 
-            <div className="pt-2 border-t border-stone-100 flex justify-end">
+            <div className="pt-2 border-t border-borda flex justify-end">
               <Botao
                 variante="perigoSuave"
                 tamanho="sm"

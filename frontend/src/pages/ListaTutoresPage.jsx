@@ -182,10 +182,10 @@ export function ListaTutoresPage({ modoInicio = false }) {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100">
             {modoInicio ? "Recepção Patas & Cia" : "Tutores Cadastrados"}
           </h1>
-          <p className="mt-1 text-sm text-stone-600 max-w-xl">
+          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400 max-w-xl">
             {modoInicio
               ? "Consulte rapidamente por tutor, telefone ou nome do pet, ou inicie um novo cadastro no balcão."
               : "Gerencie os tutores responsáveis, telefones de contato e seus animais vinculados."}
@@ -233,7 +233,7 @@ export function ListaTutoresPage({ modoInicio = false }) {
             alertaErro.tutorId ? (
               <Link
                 to={`/tutores/${alertaErro.tutorId}`}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-900 underline hover:text-rose-950"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-900 dark:text-rose-200 underline hover:text-rose-950 dark:hover:text-white"
               >
                 <span>Abrir ficha de {alertaErro.nomeTutor} para gerenciar os animais</span>
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -245,7 +245,7 @@ export function ListaTutoresPage({ modoInicio = false }) {
 
       <div className="space-y-2">
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-stone-600">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-stone-600 dark:text-stone-400">
             <Search className="h-4 w-4" aria-hidden="true" />
           </div>
           <input
@@ -255,7 +255,7 @@ export function ListaTutoresPage({ modoInicio = false }) {
             onChange={(e) => atualizarBusca(e.target.value)}
             aria-label="Buscar por nome do tutor, telefone ou nome do animal"
             placeholder="Buscar tutor, telefone ou pet (ex.: Beatriz, 85 9900 ou Clarke)"
-            className="min-h-12 w-full rounded-2xl border border-stone-300 bg-white pl-11 pr-16 py-3 text-sm text-stone-900 placeholder:text-[#66605b] sombra-cartao transition-colors focus:border-teal-700 focus:outline-none focus:ring-3 focus:ring-teal-700/20"
+            className="min-h-12 w-full rounded-2xl border border-borda-forte bg-superficie-campo pl-11 pr-16 py-3 text-sm text-stone-900 dark:text-stone-100 placeholder:text-[#66605b] dark:placeholder:text-stone-400 sombra-cartao transition-colors focus:border-teal-700 dark:focus:bg-superficie-elevada dark:focus:border-teal-400 focus:outline-none focus:ring-3 focus:ring-teal-700/20 dark:focus:ring-teal-400/25"
           />
           {busca ? (
             <button
@@ -265,14 +265,14 @@ export function ListaTutoresPage({ modoInicio = false }) {
                 campoBuscaRef.current?.focus();
               }}
               aria-label="Limpar busca"
-              className="absolute inset-y-0 right-2 my-auto flex h-9 w-9 items-center justify-center rounded-xl text-stone-600 hover:bg-stone-100 hover:text-stone-900 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+              className="absolute inset-y-0 right-2 my-auto flex h-9 w-9 items-center justify-center rounded-xl text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 dark:focus-visible:ring-teal-400"
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>
           ) : (
             <kbd
               aria-hidden="true"
-              className="pointer-events-none hidden sm:inline-flex absolute inset-y-0 right-3.5 my-auto h-6 items-center rounded-md border border-stone-200 bg-stone-100 px-2 text-xs font-semibold text-stone-600"
+              className="pointer-events-none hidden sm:inline-flex absolute inset-y-0 right-3.5 my-auto h-6 items-center rounded-md border border-borda bg-superficie-sutil px-2 text-xs font-semibold text-stone-600 dark:text-stone-400"
             >
               /
             </kbd>
@@ -280,7 +280,7 @@ export function ListaTutoresPage({ modoInicio = false }) {
         </div>
 
         {!carregandoInicial && !erroConexao && (
-          <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-xs font-medium text-stone-600 numeros-tabulares">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-xs font-medium text-stone-600 dark:text-stone-400 numeros-tabulares">
             <span>
               {resultadosFiltrados.length === 1
                 ? "1 tutor encontrado"
@@ -288,7 +288,10 @@ export function ListaTutoresPage({ modoInicio = false }) {
               {busca.trim() ? ` para "${busca.trim()}"` : ""}
             </span>
             <span className="inline-flex items-center gap-1">
-              <PawPrint className="h-3.5 w-3.5 text-teal-700" aria-hidden="true" />
+              <PawPrint
+                className="h-3.5 w-3.5 text-teal-700 dark:text-teal-400"
+                aria-hidden="true"
+              />
               <span>
                 {totalPetsExibidos === 1
                   ? "1 paciente vinculado"
@@ -311,7 +314,7 @@ export function ListaTutoresPage({ modoInicio = false }) {
           {[1, 2, 3].map((item) => (
             <div
               key={item}
-              className="h-28 animate-pulse rounded-2xl border border-stone-200 bg-white p-5"
+              className="h-28 animate-pulse rounded-2xl border border-borda bg-superficie p-5"
             />
           ))}
         </div>

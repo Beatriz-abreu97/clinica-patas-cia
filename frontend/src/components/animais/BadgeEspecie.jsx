@@ -11,16 +11,20 @@ export function resolverVisualEspecie(especie = "") {
   ) {
     return {
       Icone: Dog,
-      classeBloco: "bg-amber-50 text-amber-900 border-amber-200",
-      classePilula: "bg-amber-50 text-amber-900 border-amber-200",
+      classeBloco:
+        "bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-800/80",
+      classePilula:
+        "bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950/60 dark:text-amber-200 dark:border-amber-800/80",
     };
   }
 
   if (texto.includes("gato") || texto.includes("felin")) {
     return {
       Icone: Cat,
-      classeBloco: "bg-teal-50 text-teal-900 border-teal-200",
-      classePilula: "bg-teal-50 text-teal-900 border-teal-200",
+      classeBloco:
+        "bg-teal-50 text-teal-900 border-teal-200 dark:bg-teal-950/60 dark:text-teal-200 dark:border-teal-800/80",
+      classePilula:
+        "bg-teal-50 text-teal-900 border-teal-200 dark:bg-teal-950/60 dark:text-teal-200 dark:border-teal-800/80",
     };
   }
 
@@ -32,23 +36,29 @@ export function resolverVisualEspecie(especie = "") {
   ) {
     return {
       Icone: Bird,
-      classeBloco: "bg-sky-50 text-sky-900 border-sky-200",
-      classePilula: "bg-sky-50 text-sky-900 border-sky-200",
+      classeBloco:
+        "bg-sky-50 text-sky-900 border-sky-200 dark:bg-sky-950/60 dark:text-sky-200 dark:border-sky-800/80",
+      classePilula:
+        "bg-sky-50 text-sky-900 border-sky-200 dark:bg-sky-950/60 dark:text-sky-200 dark:border-sky-800/80",
     };
   }
 
   if (texto.includes("coelho") || texto.includes("roedor") || texto.includes("hamster")) {
     return {
       Icone: Rabbit,
-      classeBloco: "bg-orange-50 text-orange-900 border-orange-200",
-      classePilula: "bg-orange-50 text-orange-900 border-orange-200",
+      classeBloco:
+        "bg-orange-50 text-orange-900 border-orange-200 dark:bg-orange-950/60 dark:text-orange-200 dark:border-orange-800/80",
+      classePilula:
+        "bg-orange-50 text-orange-900 border-orange-200 dark:bg-orange-950/60 dark:text-orange-200 dark:border-orange-800/80",
     };
   }
 
   return {
     Icone: PawPrint,
-    classeBloco: "bg-stone-100 text-stone-800 border-stone-200",
-    classePilula: "bg-stone-100 text-stone-800 border-stone-200",
+    classeBloco:
+      "bg-stone-100 text-stone-800 border-stone-200 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700",
+    classePilula:
+      "bg-stone-100 text-stone-800 border-stone-200 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700",
   };
 }
 

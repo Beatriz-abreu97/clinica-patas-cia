@@ -115,10 +115,12 @@ export function FormularioTutor({
         <AlertaBanner tipo="erro" titulo="Não foi possível salvar" mensagem={erroGeral} />
       )}
 
-      <section className="rounded-2xl border border-stone-200 bg-white p-5 sm:p-6 sombra-cartao space-y-5">
-        <div className="border-b border-stone-100 pb-3.5">
-          <h2 className="text-lg font-bold text-stone-900">Identificação e Contato</h2>
-          <p className="mt-0.5 text-xs sm:text-sm text-stone-600">
+      <section className="rounded-2xl border border-borda bg-superficie p-5 sm:p-6 sombra-cartao space-y-5">
+        <div className="border-b border-borda pb-3.5">
+          <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100">
+            Identificação e Contato
+          </h2>
+          <p className="mt-0.5 text-xs sm:text-sm text-stone-600 dark:text-stone-400">
             Apenas nome e telefone são obrigatórios para registrar o tutor no balcão.
           </p>
         </div>
@@ -167,24 +169,27 @@ export function FormularioTutor({
         </div>
       </section>
 
-      <section className="rounded-2xl border border-stone-200 bg-white sombra-cartao">
+      <section className="rounded-2xl border border-borda bg-superficie sombra-cartao">
         <button
           type="button"
           aria-expanded={mostrarEndereco}
           onClick={() => setEnderecoAberto((aberto) => !aberto)}
-          className={`flex w-full items-center justify-between gap-3 px-5 py-4 sm:px-6 text-left hover:bg-stone-50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-700 ${
+          className={`flex w-full items-center justify-between gap-3 px-5 py-4 sm:px-6 text-left hover:bg-superficie-sutil transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-700 dark:focus-visible:ring-teal-400 ${
             mostrarEndereco ? "rounded-t-2xl" : "rounded-2xl"
           }`}
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 border border-amber-200 text-amber-800">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 border border-amber-200 text-amber-800 dark:bg-amber-950/60 dark:border-amber-800 dark:text-amber-200">
               <MapPin className="h-4 w-4" aria-hidden="true" />
             </div>
             <div>
-              <span className="fonte-titulo block text-base font-bold text-stone-900">
-                Endereço Residencial <span className="font-normal text-sm text-stone-600">(opcional)</span>
+              <span className="fonte-titulo block text-base font-bold text-stone-900 dark:text-stone-100">
+                Endereço Residencial{" "}
+                <span className="font-normal text-sm text-stone-600 dark:text-stone-400">
+                  (opcional)
+                </span>
               </span>
-              <span className="block text-xs text-stone-600">
+              <span className="block text-xs text-stone-600 dark:text-stone-400">
                 {mostrarEndereco
                   ? "Clique para recolher os campos opcionais de endereço."
                   : "Clique se desejar registrar CEP, rua, bairro e cidade."}
@@ -193,22 +198,22 @@ export function FormularioTutor({
           </div>
 
           {mostrarEndereco ? (
-            <ChevronUp className="h-5 w-5 text-stone-600 shrink-0" aria-hidden="true" />
+            <ChevronUp className="h-5 w-5 text-stone-600 dark:text-stone-400 shrink-0" aria-hidden="true" />
           ) : (
-            <ChevronDown className="h-5 w-5 text-stone-600 shrink-0" aria-hidden="true" />
+            <ChevronDown className="h-5 w-5 text-stone-600 dark:text-stone-400 shrink-0" aria-hidden="true" />
           )}
         </button>
 
         {mostrarEndereco && (
-          <div className="border-t border-stone-100 p-5 sm:p-6 space-y-4">
+          <div className="border-t border-borda p-5 sm:p-6 space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs text-stone-600">
+              <span className="text-xs text-stone-600 dark:text-stone-400">
                 Atalho rápido para clientes do bairro:
               </span>
               <button
                 type="button"
                 onClick={preencherCidadeClinica}
-                className="min-h-9 rounded-lg border border-stone-300 bg-stone-50 px-3 py-1.5 text-xs font-semibold text-stone-800 hover:bg-stone-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+                className="min-h-9 rounded-lg border border-borda-forte bg-superficie-sutil px-3 py-1.5 text-xs font-semibold text-stone-800 dark:text-stone-200 hover:bg-stone-200/70 dark:hover:bg-stone-700/80 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 dark:focus-visible:ring-teal-400"
               >
                 Preencher Fortaleza / CE
               </button>

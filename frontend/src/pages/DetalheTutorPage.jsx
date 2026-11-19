@@ -147,9 +147,9 @@ export function DetalheTutorPage() {
   if (carregando) {
     return (
       <div className="space-y-5" aria-busy="true">
-        <div className="h-6 w-40 animate-pulse rounded-lg bg-stone-200" />
-        <div className="h-44 animate-pulse rounded-2xl border border-stone-200 bg-white" />
-        <div className="h-32 animate-pulse rounded-2xl border border-stone-200 bg-white" />
+        <div className="h-6 w-40 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
+        <div className="h-44 animate-pulse rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900" />
+        <div className="h-32 animate-pulse rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900" />
       </div>
     );
   }
@@ -166,7 +166,7 @@ export function DetalheTutorPage() {
         acao={
           <div className="flex flex-wrap justify-center gap-2.5">
             <Botao to="/tutores" variante="secundario" icone={ArrowLeft}>
-              Voltar para o balcão
+              Voltar para tutores
             </Botao>
             {!naoEncontrado && (
               <Botao icone={RefreshCw} onClick={() => carregarFicha()}>
@@ -189,10 +189,10 @@ export function DetalheTutorPage() {
       <div>
         <Link
           to="/tutores"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-800 hover:text-teal-950 hover:underline transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-800 hover:text-teal-950 dark:text-teal-300 dark:hover:text-teal-200 hover:underline transition-colors"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          <span>Voltar para o balcão</span>
+          <span>Voltar para tutores</span>
         </Link>
       </div>
 
@@ -213,12 +213,14 @@ export function DetalheTutorPage() {
         />
       )}
 
-      <section className="rounded-2xl border border-stone-200 bg-white overflow-hidden sombra-cartao">
-        <div className="bg-teal-50/70 border-b border-teal-100 px-5 py-4 sm:px-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <section className="rounded-2xl border border-borda bg-superficie overflow-hidden sombra-cartao">
+        <div className="bg-teal-50/70 dark:bg-teal-950/45 border-b border-teal-100 dark:border-teal-900/70 px-5 py-4 sm:px-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900">{tutor.nome}</h1>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100">
+              {tutor.nome}
+            </h1>
             {dataCadastro && (
-              <p className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-teal-900/80 numeros-tabulares">
+              <p className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-teal-900/80 dark:text-teal-200/80 numeros-tabulares">
                 <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>Cliente desde {dataCadastro}</span>
               </p>
@@ -242,18 +244,23 @@ export function DetalheTutorPage() {
 
         <div className="p-5 sm:p-6 grid grid-cols-1 gap-4 sm:grid-cols-2 text-sm">
           <div className="flex items-start gap-3">
-            <Phone className="h-4 w-4 mt-0.5 text-teal-700 shrink-0" aria-hidden="true" />
+            <Phone
+              className="h-4 w-4 mt-0.5 text-teal-700 dark:text-teal-400 shrink-0"
+              aria-hidden="true"
+            />
             <div>
-              <span className="block text-xs font-semibold text-stone-600">Telefone</span>
+              <span className="block text-xs font-semibold text-stone-600 dark:text-stone-400">
+                Telefone
+              </span>
               {telefoneHref ? (
                 <a
                   href={telefoneHref}
-                  className="font-bold text-stone-900 hover:text-teal-800 hover:underline numeros-tabulares"
+                  className="font-bold text-stone-900 dark:text-stone-100 hover:text-teal-800 dark:hover:text-teal-300 hover:underline numeros-tabulares"
                 >
                   {telefoneFormatado}
                 </a>
               ) : (
-                <span className="font-bold text-stone-900 numeros-tabulares">
+                <span className="font-bold text-stone-900 dark:text-stone-100 numeros-tabulares">
                   {telefoneFormatado}
                 </span>
               )}
@@ -261,21 +268,35 @@ export function DetalheTutorPage() {
           </div>
 
           <div className="flex items-start gap-3">
-            <Mail className="h-4 w-4 mt-0.5 text-teal-700 shrink-0" aria-hidden="true" />
+            <Mail
+              className="h-4 w-4 mt-0.5 text-teal-700 dark:text-teal-400 shrink-0"
+              aria-hidden="true"
+            />
             <div className="min-w-0">
-              <span className="block text-xs font-semibold text-stone-600">E-mail</span>
-              <span className="text-stone-800 break-all">
-                {tutor.email || <span className="text-stone-600">Não informado</span>}
+              <span className="block text-xs font-semibold text-stone-600 dark:text-stone-400">
+                E-mail
+              </span>
+              <span className="text-stone-800 dark:text-stone-200 break-all">
+                {tutor.email || (
+                  <span className="text-stone-600 dark:text-stone-400">Não informado</span>
+                )}
               </span>
             </div>
           </div>
 
           <div className="flex items-start gap-3 sm:col-span-2">
-            <MapPin className="h-4 w-4 mt-0.5 text-teal-700 shrink-0" aria-hidden="true" />
+            <MapPin
+              className="h-4 w-4 mt-0.5 text-teal-700 dark:text-teal-400 shrink-0"
+              aria-hidden="true"
+            />
             <div>
-              <span className="block text-xs font-semibold text-stone-600">Endereço</span>
-              <span className="text-stone-800">
-                {enderecoCompleto || <span className="text-stone-600">Endereço não informado</span>}
+              <span className="block text-xs font-semibold text-stone-600 dark:text-stone-400">
+                Endereço
+              </span>
+              <span className="text-stone-800 dark:text-stone-200">
+                {enderecoCompleto || (
+                  <span className="text-stone-600 dark:text-stone-400">Endereço não informado</span>
+                )}
               </span>
             </div>
           </div>
@@ -285,8 +306,10 @@ export function DetalheTutorPage() {
       <section id="secao-animais-tutor" className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2.5">
-            <h2 className="text-xl font-extrabold text-stone-900">Animais deste Tutor</h2>
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-bold text-amber-900 numeros-tabulares">
+            <h2 className="text-xl font-extrabold text-stone-900 dark:text-stone-100">
+              Animais deste Tutor
+            </h2>
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 dark:bg-amber-950/60 dark:border-amber-800 px-2.5 py-0.5 text-xs font-bold text-amber-900 dark:text-amber-200 numeros-tabulares">
               <PawPrint className="h-3 w-3" aria-hidden="true" />
               <span>{animais.length}</span>
             </span>

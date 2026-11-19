@@ -131,20 +131,20 @@ export function FormularioAnimal({
         <AlertaBanner tipo="erro" titulo="Não foi possível salvar" mensagem={erroGeral} />
       )}
 
-      <section className="rounded-2xl border border-stone-200 bg-white p-4 sm:p-5 sombra-cartao">
+      <section className="rounded-2xl border border-borda bg-superficie p-4 sm:p-5 sombra-cartao">
         {!exibirSeletorAberto && tutorAtual ? (
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 border border-teal-200 text-teal-800">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-50 border border-teal-200 text-teal-800 dark:bg-teal-950/70 dark:border-teal-800 dark:text-teal-200">
                 <User className="h-4 w-4" aria-hidden="true" />
               </div>
               <div className="min-w-0">
-                <span className="block text-xs font-semibold text-stone-600">
+                <span className="block text-xs font-semibold text-stone-600 dark:text-stone-400">
                   Tutor responsável
                 </span>
-                <p className="text-sm sm:text-base font-bold text-stone-900 truncate">
+                <p className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100 truncate">
                   {tutorAtual.nome}{" "}
-                  <span className="font-medium text-stone-600 numeros-tabulares">
+                  <span className="font-medium text-stone-600 dark:text-stone-400 numeros-tabulares">
                     · {formatarTelefone(tutorAtual.telefone)}
                   </span>
                 </p>
@@ -164,10 +164,13 @@ export function FormularioAnimal({
           <div className="space-y-3.5">
             <div className="flex items-center justify-between gap-2">
               <div>
-                <label htmlFor="tutor_id" className="block text-sm font-bold text-stone-900">
-                  Tutor responsável <span className="text-rose-700">*</span>
+                <label
+                  htmlFor="tutor_id"
+                  className="block text-sm font-bold text-stone-900 dark:text-stone-100"
+                >
+                  Tutor responsável <span className="text-rose-700 dark:text-rose-400">*</span>
                 </label>
-                <p className="text-xs text-stone-600">
+                <p className="text-xs text-stone-600 dark:text-stone-400">
                   {modoEdicao
                     ? "Para transferir o animal para outro responsável, pesquise e selecione abaixo."
                     : "Pesquise pelo nome ou telefone do tutor para vincular o animal."}
@@ -177,7 +180,7 @@ export function FormularioAnimal({
                 <button
                   type="button"
                   onClick={() => setSeletorTutorAberto(false)}
-                  className="text-xs font-semibold text-teal-800 hover:underline cursor-pointer"
+                  className="text-xs font-semibold text-teal-800 dark:text-teal-300 hover:underline cursor-pointer"
                 >
                   Manter {tutorAtual.nome.split(" ")[0]}
                 </button>
@@ -185,7 +188,7 @@ export function FormularioAnimal({
             </div>
 
             <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-600">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-stone-600 dark:text-stone-400">
                 <Search className="h-4 w-4" aria-hidden="true" />
               </div>
               <input
@@ -195,19 +198,19 @@ export function FormularioAnimal({
                 onChange={(e) => setBuscaTutor(e.target.value)}
                 placeholder="Filtrar tutor por nome ou telefone..."
                 aria-label="Filtrar tutor responsável por nome ou telefone"
-                className="min-h-11 w-full rounded-xl border border-stone-300 bg-stone-50/70 pl-10 pr-3.5 py-2 text-sm text-stone-900 placeholder:text-[#66605b] focus:bg-white focus:border-teal-700 focus:outline-none focus:ring-3 focus:ring-teal-700/20"
+                className="min-h-11 w-full rounded-xl border border-borda-forte bg-superficie-campo pl-10 pr-3.5 py-2 text-sm text-stone-900 dark:text-stone-100 placeholder:text-[#66605b] dark:placeholder:text-stone-400 focus:border-teal-700 dark:focus:bg-superficie-elevada dark:focus:border-teal-400 focus:outline-none focus:ring-3 focus:ring-teal-700/20 dark:focus:ring-teal-400/25"
               />
             </div>
 
             <div
               role="listbox"
               aria-label="Tutores disponíveis"
-              className={`max-h-52 overflow-y-auto rounded-xl border divide-y divide-stone-100 ${
-                errosCampos.tutor_id ? "border-rose-500" : "border-stone-200"
+              className={`max-h-52 overflow-y-auto rounded-xl border bg-superficie-campo divide-y divide-borda ${
+                errosCampos.tutor_id ? "border-rose-500" : "border-borda-forte"
               }`}
             >
               {tutoresFiltrados.length === 0 ? (
-                <p className="p-4 text-center text-xs text-stone-600">
+                <p className="p-4 text-center text-xs text-stone-600 dark:text-stone-400">
                   Nenhum tutor corresponde a &ldquo;{buscaTutor.trim()}&rdquo;.
                 </p>
               ) : (
@@ -220,17 +223,20 @@ export function FormularioAnimal({
                       role="option"
                       aria-selected={selecionado}
                       onClick={() => selecionarTutor(tutor.id)}
-                      className={`flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-teal-50 ${
+                      className={`flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left text-sm transition-colors cursor-pointer focus-visible:outline-none focus-visible:bg-teal-50 dark:focus-visible:bg-teal-950/60 ${
                         selecionado
-                          ? "bg-teal-50 text-teal-950 font-semibold"
-                          : "bg-white text-stone-800 hover:bg-stone-50"
+                          ? "bg-teal-50 text-teal-950 dark:bg-teal-950/80 dark:text-teal-200 font-semibold"
+                          : "bg-superficie-campo text-stone-800 hover:bg-stone-50 dark:text-stone-200 dark:hover:bg-stone-800"
                       }`}
                     >
                       <span className="truncate">{tutor.nome}</span>
-                      <span className="flex items-center gap-2 shrink-0 text-xs text-stone-600 numeros-tabulares">
+                      <span className="flex items-center gap-2 shrink-0 text-xs text-stone-600 dark:text-stone-400 numeros-tabulares">
                         <span>{formatarTelefone(tutor.telefone)}</span>
                         {selecionado && (
-                          <Check className="h-4 w-4 text-teal-700" aria-hidden="true" />
+                          <Check
+                            className="h-4 w-4 text-teal-700 dark:text-teal-400"
+                            aria-hidden="true"
+                          />
                         )}
                       </span>
                     </button>
@@ -240,7 +246,10 @@ export function FormularioAnimal({
             </div>
 
             {errosCampos.tutor_id && (
-              <p role="alert" className="flex items-center gap-1.5 text-xs font-medium text-rose-800">
+              <p
+                role="alert"
+                className="flex items-center gap-1.5 text-xs font-medium text-rose-800 dark:text-rose-300"
+              >
                 <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                 <span>{errosCampos.tutor_id}</span>
               </p>
@@ -249,10 +258,12 @@ export function FormularioAnimal({
         )}
       </section>
 
-      <section className="rounded-2xl border border-stone-200 bg-white p-5 sm:p-6 sombra-cartao space-y-5">
-        <div className="border-b border-stone-100 pb-3.5">
-          <h2 className="text-lg font-bold text-stone-900">Identificação e Características</h2>
-          <p className="mt-0.5 text-xs sm:text-sm text-stone-600">
+      <section className="rounded-2xl border border-borda bg-superficie p-5 sm:p-6 sombra-cartao space-y-5">
+        <div className="border-b border-borda pb-3.5">
+          <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100">
+            Identificação e Características
+          </h2>
+          <p className="mt-0.5 text-xs sm:text-sm text-stone-600 dark:text-stone-400">
             Dados clínicos básicos do paciente animal.
           </p>
         </div>
@@ -270,8 +281,8 @@ export function FormularioAnimal({
           />
 
           <fieldset>
-            <legend className="block text-sm font-semibold text-stone-800 mb-1.5">
-              Sexo <span className="text-rose-700">*</span>
+            <legend className="block text-sm font-semibold text-stone-800 dark:text-stone-200 mb-1.5">
+              Sexo <span className="text-rose-700 dark:text-rose-400">*</span>
             </legend>
             <div className="grid grid-cols-2 gap-2.5">
               {OPCOES_SEXO.map((opcao, indice) => {
@@ -281,11 +292,11 @@ export function FormularioAnimal({
                     key={opcao.valor}
                     className={`relative flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-semibold transition-colors cursor-pointer ${
                       ativo
-                        ? "border-teal-700 bg-teal-50 text-teal-950"
+                        ? "border-teal-700 bg-teal-50 text-teal-950 dark:border-teal-500 dark:bg-teal-950/80 dark:text-teal-200"
                         : errosCampos.sexo
-                          ? "border-rose-400 bg-rose-50/40 text-stone-800 hover:bg-rose-50"
-                          : "border-stone-300 bg-white text-stone-800 hover:bg-stone-50"
-                    } has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-teal-700/30`}
+                          ? "border-rose-400 bg-rose-50/40 text-stone-800 hover:bg-rose-50 dark:border-rose-500 dark:bg-rose-950/35 dark:text-stone-200"
+                          : "border-borda-forte bg-superficie-campo text-stone-800 hover:bg-stone-50 dark:text-stone-200 dark:hover:bg-stone-800"
+                    } has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-teal-700/30 dark:has-[:focus-visible]:ring-teal-400/30`}
                   >
                     <input
                       id={indice === 0 ? "sexo" : `sexo-${opcao.valor}`}
@@ -297,13 +308,18 @@ export function FormularioAnimal({
                       className="sr-only"
                     />
                     <span>{opcao.rotulo}</span>
-                    <span className="text-xs font-normal text-stone-600">({opcao.descricao})</span>
+                    <span className="text-xs font-normal text-stone-600 dark:text-stone-400">
+                      ({opcao.descricao})
+                    </span>
                   </label>
                 );
               })}
             </div>
             {errosCampos.sexo && (
-              <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-800">
+              <p
+                role="alert"
+                className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-rose-800 dark:text-rose-300"
+              >
                 <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                 <span>{errosCampos.sexo}</span>
               </p>
@@ -329,10 +345,10 @@ export function FormularioAnimal({
                     key={sugestao}
                     type="button"
                     onClick={() => alterarCampo("especie", sugestao)}
-                    className={`min-h-9 rounded-lg px-3 py-1 text-xs font-semibold border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 ${
+                    className={`min-h-9 rounded-lg px-3 py-1 text-xs font-semibold border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 dark:focus-visible:ring-teal-400 ${
                       selecionada
-                        ? "bg-teal-700 text-white border-teal-700"
-                        : "bg-stone-100 text-stone-800 border-stone-300 hover:bg-stone-200/80"
+                        ? "bg-teal-700 text-white border-teal-700 dark:bg-teal-500 dark:text-stone-950 dark:border-teal-500"
+                        : "bg-stone-100 text-stone-800 border-stone-300 hover:bg-stone-200/80 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700 dark:hover:bg-stone-700"
                     }`}
                   >
                     {sugestao}
@@ -356,10 +372,10 @@ export function FormularioAnimal({
               <button
                 type="button"
                 onClick={() => alterarCampo("raca", "SRD")}
-                className={`min-h-9 rounded-lg px-3 py-1 text-xs font-semibold border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 ${
+                className={`min-h-9 rounded-lg px-3 py-1 text-xs font-semibold border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 dark:focus-visible:ring-teal-400 ${
                   dados.raca.trim().toUpperCase() === "SRD"
-                    ? "bg-teal-700 text-white border-teal-700"
-                    : "bg-stone-100 text-stone-800 border-stone-300 hover:bg-stone-200/80"
+                    ? "bg-teal-700 text-white border-teal-700 dark:bg-teal-500 dark:text-stone-950 dark:border-teal-500"
+                    : "bg-stone-100 text-stone-800 border-stone-300 hover:bg-stone-200/80 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700 dark:hover:bg-stone-700"
                 }`}
               >
                 SRD (Sem Raça Definida)
