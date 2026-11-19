@@ -37,7 +37,13 @@ clinica-patas-cia/
 │   │   └── db/             pool do Postgres
 │   ├── database/       migrations SQL
 │   └── tests/          testes automatizados
-├── frontend/           React (equipe do front)
+├── frontend/           Aplicação Web (React + Vite + Tailwind CSS)
+│   ├── src/
+│   │   ├── components/     layout, UI reutilizável e cartões/formulários
+│   │   ├── pages/          telas dedicadas de tutores e animais
+│   │   ├── services/       cliente HTTP central e serviços por recurso
+│   │   └── utils/          máscaras, formatação e normalização de busca
+│   └── tests/          testes unitários de formatadores e cliente HTTP
 ├── doc/                materiais de apoio e evidências
 ├── API.md              contrato da API
 └── SPEC.md             plano de desenvolvimento
@@ -77,6 +83,29 @@ npm run dev
 ```
 
 Conferir: <http://localhost:3000/health> → `{"status":"ok","banco":"ok"}`
+
+## Como rodar o frontend
+
+Pré-requisito: **Node.js 20+**.
+
+```powershell
+cd frontend
+npm install
+Copy-Item .env.example .env
+```
+
+Preencha `frontend/.env` apontando para a API local ou para a API publicada no Render:
+
+```env
+VITE_API_URL=http://localhost:3000/api
+# ou: VITE_API_URL=https://clinica-patas-cia.onrender.com/api
+```
+
+Rodar em desenvolvimento (<http://localhost:5173>):
+
+```powershell
+npm run dev
+```
 
 ## Scripts
 
