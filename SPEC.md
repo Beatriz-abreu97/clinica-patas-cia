@@ -79,6 +79,8 @@ Distribuição dos 5,0 pontos da rubrica: 1,5 adequação ao cenário · 2,0 rig
 | Acesso a dados | **`pg` + SQL parametrizado** (sem ORM) | Mantém o que a colega fez, deixa a camada de dados explícita e evita aprender ORM em 10 dias |
 | Validação | **Zod** | Schemas declarativos, mensagens em português, um único ponto para normalizar dados |
 | Testes | **Vitest + Supertest** (mínimos) | Testar regras de serviço e respostas HTTP sem depender do banco |
+| Contrato | **OpenAPI 3.1** (`backend/openapi.yaml`) + Swagger UI em `/api-docs` | Padrão de mercado; UI interativa serve de evidência e destrava o front; teste garante spec ↔ app |
+| Proteção | **Rate limit** (`express-rate-limit`, 300 req/15 min por IP, `trust proxy` no Render) | Cobre o critério de segurança do P3 com poucas linhas e um teste |
 | Arquitetura | **Monorepo simples** (`backend/` + `frontend/`) | Já é a estrutura do repo; Render aponta para `backend`, Vercel para `frontend` |
 | Deploy API | **Render (Web Service)** | Grátis, HTTPS, deploy por push |
 | Deploy front | **Vercel** | Responsabilidade da colega do front |
@@ -106,7 +108,7 @@ No Render: **Root Directory = `backend`**. Na Vercel: **Root Directory = `fronte
 - `.gitignore` já cobre `node_modules/` e `.env`.
 - Express 5 + `cors` + `dotenv` instalados.
 
-O que falta: camada de serviço, controllers/rotas, validação, tratamento de erros centralizado, testes, contrato documentado, deploy e remoção das rotas de teste (`/teste-banco`, `/teste-repos`).
+O que faltava (tudo concluído em 17–18/11): camada de serviço, controllers/rotas, validação com Zod, tratamento de erros centralizado, testes, contrato OpenAPI documentado, deploy no Render e remoção das rotas de teste (`/teste-banco`, `/teste-repos`).
 
 ---
 
@@ -150,6 +152,7 @@ backend/
 │   │   └── validar.js            # middleware que aplica um schema Zod
 │   ├── middlewares/
 │   │   ├── errorHandler.js       # formato único de erro
+│   │   ├── limiteRequisicoes.js  # rate limit (429 LIMITE_EXCEDIDO)
 │   │   └── notFound.js           # 404 para rota inexistente
 │   └── errors/AppError.js        # erro com status + código + campos
 ├── database/
@@ -157,15 +160,18 @@ backend/
 │   ├── 002_constraints.sql       # índices, checks e atualizado_em
 │   └── 003_seed_dev.sql          # dados de demonstração (não roda em produção)
 ├── tests/
+│   ├── helpers.js                # fakes compartilhados entre os arquivos de teste
 │   ├── tutorService.test.js
 │   ├── animalService.test.js
-│   └── api.test.js
-├── API.md                        # contrato da API (compartilhado com o front)
+│   ├── api.test.js
+│   └── openapi.test.js           # valida a spec e confere spec ↔ app
+├── openapi.yaml                  # contrato OpenAPI 3.1 (fonte da verdade)
+├── API.md                        # resumo amigável para o front
 ├── .env.example
 └── package.json
 ```
 
-Os arquivos atuais serão movidos com `git mv` (preserva histórico): `index.js` → `src/server.js` + `src/app.js`, `pool.js` → `src/db/pool.js`, repositórios → `src/repositories/`.
+Os arquivos foram movidos com `git mv` (preserva histórico): `index.js` → `src/server.js` + `src/app.js`, `pool.js` → `src/db/pool.js`, repositórios → `src/repositories/`.
 
 ### 4.2 Responsabilidade de cada camada
 
@@ -391,6 +397,7 @@ Resposta `201 Created`:
 | 400 | `JSON_INVALIDO` | JSON malformado no corpo |
 | 404 | `NAO_ENCONTRADO` | id não existe ou rota desconhecida |
 | 409 | `CONFLITO` | exclusão de tutor com animais |
+| 429 | `LIMITE_EXCEDIDO` | mais de 300 requisições do mesmo IP em 15 min |
 | 500 | `ERRO_INTERNO` | falha inesperada (sem vazar stack) |
 
 Exemplo da regra principal do cenário:
@@ -451,13 +458,14 @@ Exemplo da regra principal do cenário:
 
 ## 9. Testes
 
-Escopo mínimo, focado no que a rubrica valoriza:
+**50 testes** em 4 arquivos, focados no que a rubrica valoriza (contagem em 18/11):
 
 | Arquivo | O que cobre |
 |---|---|
-| `tests/tutorService.test.js` | exclusão bloqueada com animais (409); exclusão permitida sem animais; tutor inexistente (404); normalização de telefone |
+| `tests/tutorService.test.js` | exclusão bloqueada com animais (409, singular e plural); exclusão permitida; tutor inexistente (404); busca repassada |
 | `tests/animalService.test.js` | `tutor_id` inexistente (400); criação válida; animal inexistente (404) |
-| `tests/api.test.js` | Supertest: 400 com lista de campos, 404 de rota, 409 formatado, 201 com `Location`, 204 sem corpo |
+| `tests/api.test.js` | Supertest: 400 com lista de campos, 404 de rota, 409 formatado (inclusive o `23503` do banco), 500 sem vazar detalhes, `/health` 503 com banco caído, 429 do rate limit, campos desconhecidos ignorados, 201 com `Location`, 204 sem corpo |
+| `tests/openapi.test.js` | spec OpenAPI 3.1 válida; cada operação documentada existe e responde com status documentado; `/api-docs` e `/api-docs.json` no ar |
 
 Como os services recebem repositórios por parâmetro, os testes usam **repositórios falsos em memória** — sem tocar no Supabase de produção.
 
@@ -539,6 +547,8 @@ Cold start: instância gratuita hiberna após ~15 min. Para cumprir "app no ar a
 
 ## 11. Cronograma (17 → 27/11)
 
+> **Status em 18/11:** os itens de 17 a 21/11 foram concluídos à frente do plano, em 17–18/11 (fundação, CRUD das duas entidades, contrato OpenAPI + Swagger UI, rate limit, deploy no Render e keep-alive). A tabela abaixo é registro histórico; o foco agora é **integração com o front, prints e PDF**. O feature freeze em 25/11 segue valendo.
+
 | Data | Entrega do dia | Critério de pronto |
 |---|---|---|
 | **17/11 (ter)** | Fundação: reorganizar pastas com `git mv`, `config/env.js`, `db/pool.js`, `app.js`/`server.js`, `/health`, `errorHandler`, `notFound`, `AppError` | `npm run dev` sobe; `/health` retorna `banco: "ok"`; rotas de teste removidas |
@@ -558,7 +568,7 @@ Se atrasar: cortar `atualizado_em`, `busca` e `GET /api/tutores/:id/animais` (ne
 
 ## 12. Evidências para o PDF (tópicos do modelo oficial)
 
-Coletar em `doc/evidencias/` com nomes descritivos (`01-lista-tutores.png`, `02-post-animal-201.png`, `03-erro-telefone-400.png`...).
+Coletar em `doc/evidencias/` com nomes descritivos (`01-lista-tutores.png`, `02-post-animal-201.png`, `03-erro-telefone-400.png`...). Roteiro operacional completo, comando a comando: [`doc/roteiro-entrega.md`](doc/roteiro-entrega.md).
 
 | # | Tópico do modelo | O que o backend fornece |
 |---|---|---|
@@ -584,22 +594,25 @@ Coletar em `doc/evidencias/` com nomes descritivos (`01-lista-tutores.png`, `02-
 
 Backend só é considerado pronto quando **todos** forem verdadeiros:
 
-- [ ] `POST`, `GET` (lista e por id), `PUT`, `DELETE` funcionando para **tutor** e **animal**.
-- [ ] Lista de animais por tutor funcionando.
-- [ ] Telefone inválido retorna **400** com mensagem clara e campo identificado.
-- [ ] Campos obrigatórios ausentes retornam **400** com todos os campos listados.
-- [ ] Excluir tutor com animais retorna **409** com a contagem.
-- [ ] Excluir o último animal e depois o tutor funciona.
-- [ ] Dados continuam lá após reiniciar a API (prova de persistência).
-- [ ] `GET /health` público respondendo 200.
-- [ ] API pública em HTTPS no Render, CORS aceitando a Vercel.
-- [ ] `npm test` verde.
-- [ ] `backend/API.md` atualizado e igual ao comportamento real.
-- [ ] `README.md` com passos de instalação, `.env.example` e comandos.
-- [ ] Nenhum segredo no git (`git log -p | Select-String "postgresql://"`).
-- [ ] Rotas temporárias (`/teste-banco`, `/teste-repos`) removidas.
-- [ ] Prints de sucesso e de erro salvos em `doc/evidencias/`.
-- [ ] Declaração de IA redigida.
+- [x] `POST`, `GET` (lista e por id), `PUT`, `DELETE` funcionando para **tutor** e **animal**.
+- [x] Lista de animais por tutor funcionando.
+- [x] Telefone inválido retorna **400** com mensagem clara e campo identificado.
+- [x] Campos obrigatórios ausentes retornam **400** com todos os campos listados.
+- [x] Excluir tutor com animais retorna **409** com a contagem.
+- [x] Excluir o último animal e depois o tutor funciona.
+- [x] Dados continuam lá após reiniciar a API (redeploys no Render; persistência verificada em integração).
+- [x] `GET /health` público respondendo 200.
+- [x] Contrato **OpenAPI 3.1** publicado (`/api-docs`), guardado por teste.
+- [x] **Rate limit** ativo (300 req/15 min por IP) com `trust proxy` configurado.
+- [x] **Keep-alive** agendado (GitHub Actions a cada 10 min).
+- [ ] API pública em HTTPS no Render, **CORS aceitando a Vercel** — falta a URL do front publicado.
+- [x] `npm test` verde (50 testes).
+- [x] `backend/API.md` atualizado e igual ao comportamento real (fonte da verdade: `openapi.yaml`).
+- [x] `README.md` com passos de instalação, `.env.example`, comandos e runbook de deploy.
+- [x] Nenhum segredo no git (`git log -p | Select-String "postgresql://"`).
+- [x] Rotas temporárias (`/teste-banco`, `/teste-repos`) removidas.
+- [ ] Prints de sucesso e de erro salvos em `doc/evidencias/` (roteiro pronto).
+- [ ] Declaração de IA redigida no PDF (rascunho na seção 14).
 
 ---
 
@@ -624,7 +637,7 @@ Manter um registro simples do que foi feito com IA (data + arquivo) para consegu
 - TypeScript, ORM, Docker, CI/CD além do deploy automático do Render.
 - Testes E2E do front.
 
-Se sobrar tempo **depois** do deploy e do PDF, os candidatos naturais são: `busca` de tutores (já prevista, custo baixo) e Swagger a partir de um `openapi.yaml`.
+Implementados após a primeira versão deste SPEC (não estavam no plano): `busca` de tutores, contrato **OpenAPI 3.1 com Swagger UI** e **rate limit**. Avaliados e descartados: helmet (ganho pequeno numa API que não serve HTML), paginação (~40 animais/semana; a `busca` já resolve a dor do cenário) e autenticação (não exigida; o risco de travar a demonstração supera o retorno na rubrica — a resposta de segurança para a banca é: validação com Zod, SQL parametrizado, CORS com whitelist, segredos fora do repo e rate limit).
 
 ---
 
@@ -679,9 +692,9 @@ Se sobrar tempo **depois** do deploy e do PDF, os candidatos naturais são: `bus
 
 ## 18. Próximos passos imediatos
 
-1. Aprovar este SPEC (ou ajustar escopo/prazos).
-2. Refatorar a estrutura do backend (`src/`, `git mv`, `/health`, erro central) — dia 17.
-3. Aplicar `002_constraints.sql` no Supabase.
-4. Implementar CRUD de tutores com validação e testes — dia 18.
-5. Congelar `API.md` e avisar a colega do front — dia 20.
-6. Deploy no Render — dia 21.
+> Concluídos em 17–18/11: refatoração em camadas (`src/`), migração `002`, CRUD completo de tutores e animais, 50 testes, contrato OpenAPI 3.1 + Swagger UI, rate limit, deploy no Render e keep-alive.
+
+1. Integração com o front: publicar na Vercel e acrescentar a URL em `CORS_ORIGINS` no Render.
+2. Capturar os prints conforme `doc/roteiro-entrega.md` (os do backend já podem ser 100% feitos).
+3. Montar o PDF (13 tópicos), com capa, declaração de IA e links reais.
+4. **25/11:** feature freeze. **26/11:** revisão final. **27/11:** envio no AVA por todos os integrantes.
