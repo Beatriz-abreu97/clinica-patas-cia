@@ -12,6 +12,10 @@ export const tutorService = {
     return requisicao(`/tutores/${id}`);
   },
 
+  listarAnimais(id) {
+    return requisicao(`/tutores/${id}/animais`);
+  },
+
   criar(dadosTutor) {
     return requisicao(`/tutores`, {
       method: 'POST',
