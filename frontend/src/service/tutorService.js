@@ -15,17 +15,17 @@ export const tutorService = {
     return requisicao(`/tutores/${id}/animais`);
   },
 
-  criar(dados) {
+  criar(dadosTutor) {
     return requisicao(`/tutores`, {
       method: 'POST',
-      body: dados,
+      body: dadosTutor,
     });
   },
 
-  atualizar(id, dados) {
+  atualizar(id, dadosTutor) {
     return requisicao(`/tutores/${id}`, {
       method: 'PUT',
-      body: dados,
+      body: dadosTutor,
     });
   },
 

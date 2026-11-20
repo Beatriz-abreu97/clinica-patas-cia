@@ -1,9 +1,14 @@
 import { requisicao } from './api';
 
 export const animalService = {
+  //busca por todos os animais da clinica, identificando os tutores responsáveis para cada um deles
   listar(tutorId = '') {
     const query = tutorId ? `?tutorId=${encodeURIComponent(tutorId)}` : '';
     return requisicao(`/animais${query}`);
+  },
+  //busca por animais do tutor
+  listarPorTutor(tutorid) {
+    return requisicao(`/tutores/${tutorid}/animais`);
   },
 
   buscaPorId(id) {
