@@ -16,7 +16,9 @@ export async function requisicao(caminho, opcoes = {}) {
   const url = `${API_BASE_URL}${caminho.startsWith('/') ? caminho : `/${caminho}`}`;
 
   const headers = {
-    ...(opcoes.body ? { 'Content-Type': 'application/json' } : {}),
+    ...(opcoes.body !== undefined
+      ? { 'Content-Type': 'application/json' }
+      : {}),
     ...opcoes.headers,
   };
 
@@ -25,7 +27,7 @@ export async function requisicao(caminho, opcoes = {}) {
     resposta = await fetch(url, {
       ...opcoes,
       headers,
-      body: opcoes.body ? JSON.stringify(opcoes.body) : undefined,
+      body: opcoes.body !== undefined ? JSON.stringify(opcoes.body) : undefined,
     });
   } catch {
     throw new ErroApi({

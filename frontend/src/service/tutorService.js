@@ -27,7 +27,7 @@ export const tutorService = {
   },
 
   excluir(id) {
-    return requisicao(`/totores/${id}`, {
+    return requisicao(`/tutores/${id}`, {
       method: 'DELETE',
     });
   },
