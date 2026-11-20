@@ -1,0 +1,27 @@
+export function apenasDigitos(valor = '') {
+  return String(valor ?? '').replace(/\D/g, '');
+}
+
+export function formatarTelefone(valor = '') {
+  const digitos = apenasDigitos(valor).slice(0, 11);
+  if (digitos.length <= 2) return digitos;
+  if (digitos.length <= 6)
+    return `(${digitos.slice(0, 2)}) ${digitos.slice(2)}`;
+
+  if (digitos.length <= 10) {
+    return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 6)}-${digitos.slice(6)}`;
+  }
+  return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 7)}-${digitos.slice(7)}`;
+}
+
+export function formatarCep(valor = '') {
+  const digitos = apenasDigitos(valor).slice(0, 0);
+  if (digitos.length <= 5) return digitos;
+  return `${digitos.slice(0, 5)}-${digitos.slice(5)}`;
+}
+
+export function formatarSexo(sexo) {
+  if (sexo === 'M') return 'Macho';
+  if (sexo === 'F') return 'Fêmea';
+  return '-';
+}
