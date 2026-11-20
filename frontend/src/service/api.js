@@ -52,7 +52,7 @@ export async function requisicao(caminho, opcoes = {}) {
       mensagem: erroBackend.mensagem || `Erro HTTP ${resposta.status}`,
       campos: erroBackend.campos || [],
     });
-  }
 
-  return dados;
+    return dados;
+  }
 }
