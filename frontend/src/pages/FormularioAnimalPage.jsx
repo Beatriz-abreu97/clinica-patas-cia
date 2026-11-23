@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useBlocker, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, PawPrint, RefreshCw, UserPlus, WifiOff } from "lucide-react";
 import { FormularioAnimal } from "../components/animais/FormularioAnimal";
 import { AlertaBanner } from "../components/ui/AlertaBanner";
@@ -29,6 +29,20 @@ export function FormularioAnimalPage() {
   const [salvando, setSalvando] = useState(false);
   const [errosCampos, setErrosCampos] = useState({});
   const [erroGeral, setErroGeral] = useState("");
+  const [formAlterado, setFormAlterado] = useState(false);
+
+  const blocker = useBlocker(({ currentLocation, nextLocation }) =>
+    formAlterado && currentLocation.pathname !== nextLocation.pathname
+  );
+
+  useEffect(() => {
+    if (blocker.state !== "blocked") return;
+    if (window.confirm("Descartar as alterações não salvas deste formulário?")) {
+      blocker.proceed();
+    } else {
+      blocker.reset();
+    }
+  }, [blocker]);
 
   useEffect(() => {
     if (location.state?.mensagemSucesso) {
@@ -99,6 +113,7 @@ export function FormularioAnimalPage() {
       const animalSalvo = modoEdicao
         ? await atualizarAnimal(id, dadosFormulario)
         : await criarAnimal(dadosFormulario);
+      setFormAlterado(false);
 
       const destinoSucesso = origemRetorno || `/tutores/${animalSalvo.tutor_id}`;
 
@@ -233,7 +248,11 @@ export function FormularioAnimalPage() {
         modoEdicao={modoEdicao}
         tutores={tutores}
         aoSalvar={salvar}
-        aoCancelar={() => navigate(rotaRetorno)}
+        aoCancelar={() => {
+          setFormAlterado(false);
+          navigate(rotaRetorno);
+        }}
+        aoReportarAlteracao={setFormAlterado}
         salvando={salvando}
         errosCampos={errosCampos}
         erroGeral={erroGeral}

@@ -390,7 +390,6 @@ export function ListaTutoresPage({ modoInicio = false }) {
         destinoAcaoProtegida={tutorParaExcluir ? `/tutores/${tutorParaExcluir.id}` : undefined}
         aoAcionarProtegida={() => setTutorParaExcluir(null)}
         rotuloAcaoProtegida="Gerenciar animais do tutor"
-        rotuloTestarBloqueioApi="Tentar excluir mesmo assim (409)"
         rotuloConfirmar="Excluir tutor"
         carregando={excluindo}
         aoConfirmar={confirmarExclusaoTutor}

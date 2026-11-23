@@ -16,7 +16,6 @@ export function ModalConfirmacao({
   rotuloAcaoProtegida = "Gerenciar animais",
   destinoAcaoProtegida,
   aoAcionarProtegida,
-  rotuloTestarBloqueioApi = "Testar bloqueio da API (409)",
   aoConfirmar,
   aoCancelar,
 }) {
@@ -108,51 +107,27 @@ export function ModalConfirmacao({
           </div>
         </div>
 
-        {modoProtegido ? (
-          <div className="mt-6 space-y-2.5">
-            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-              <Botao variante="secundario" onClick={aoCancelar} disabled={carregando}>
-                {rotuloCancelar}
-              </Botao>
-              <Botao
-                ref={focoInicialRef}
-                variante="primario"
-                icone={PawPrint}
-                to={destinoAcaoProtegida}
-                onClick={aoAcionarProtegida}
-                disabled={carregando}
-              >
-                {rotuloAcaoProtegida}
-              </Botao>
-            </div>
-
-            <div className="pt-2 border-t border-borda flex justify-end">
-              <Botao
-                variante="perigoSuave"
-                tamanho="sm"
-                onClick={aoConfirmar}
-                carregando={carregando}
-                className="w-full sm:w-auto"
-              >
-                {rotuloTestarBloqueioApi}
-              </Botao>
-            </div>
-          </div>
-        ) : (
-          <div className="mt-6 flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">
+        <div className="mt-6 flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">
+          <Botao variante="secundario" onClick={aoCancelar} disabled={carregando}>
+            {rotuloCancelar}
+          </Botao>
+          {modoProtegido ? (
             <Botao
               ref={focoInicialRef}
-              variante="secundario"
-              onClick={aoCancelar}
+              variante="primario"
+              icone={PawPrint}
+              to={destinoAcaoProtegida}
+              onClick={aoAcionarProtegida}
               disabled={carregando}
             >
-              {rotuloCancelar}
+              {rotuloAcaoProtegida}
             </Botao>
+          ) : (
             <Botao variante="perigo" onClick={aoConfirmar} carregando={carregando}>
               {rotuloConfirmar}
             </Botao>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, Check, RefreshCw, Save, Scale, Search, User } from "lucide-react";
 import { ESPECIES_SUGERIDAS, OPCOES_SEXO } from "../../utils/constantes";
 import {
@@ -40,6 +40,7 @@ export function FormularioAnimal({
   tutores = [],
   aoSalvar,
   aoCancelar,
+  aoReportarAlteracao,
   salvando = false,
   errosCampos = {},
   erroGeral = "",
@@ -53,6 +54,7 @@ export function FormularioAnimal({
     () => !tutorIdPadrao && !valoresIniciais?.tutor_id
   );
   const [buscaTutor, setBuscaTutor] = useState("");
+  const listaTutoresRef = useRef(null);
 
   useEffect(() => {
     if (!alterado || salvando) return undefined;
@@ -65,6 +67,12 @@ export function FormularioAnimal({
     window.addEventListener("beforeunload", aoSairDaPagina);
     return () => window.removeEventListener("beforeunload", aoSairDaPagina);
   }, [alterado, salvando]);
+
+  useEffect(() => {
+    if (aoReportarAlteracao) {
+      aoReportarAlteracao(alterado);
+    }
+  }, [alterado, aoReportarAlteracao]);
 
   const tutorAtual = useMemo(
     () => tutores.find((item) => String(item.id) === String(dados.tutor_id)) || null,
@@ -97,6 +105,29 @@ export function FormularioAnimal({
     alterarCampo("tutor_id", String(idEscolhido));
     setSeletorTutorAberto(false);
     setBuscaTutor("");
+  }
+
+  function aoTeclarNaListaTutores(evento) {
+    const botoes = Array.from(
+      listaTutoresRef.current?.querySelectorAll('button[role="option"]') ?? []
+    );
+    if (botoes.length === 0) return;
+
+    const atual = botoes.indexOf(document.activeElement);
+
+    if (evento.key === "ArrowDown") {
+      evento.preventDefault();
+      botoes[Math.min(atual + 1, botoes.length - 1)]?.focus();
+    } else if (evento.key === "ArrowUp") {
+      evento.preventDefault();
+      botoes[Math.max(atual - 1, 0)]?.focus();
+    } else if (evento.key === "Home") {
+      evento.preventDefault();
+      botoes[0]?.focus();
+    } else if (evento.key === "End") {
+      evento.preventDefault();
+      botoes[botoes.length - 1]?.focus();
+    }
   }
 
   function aoSubmeter(evento) {
@@ -203,8 +234,11 @@ export function FormularioAnimal({
             </div>
 
             <div
+              ref={listaTutoresRef}
               role="listbox"
               aria-label="Tutores disponíveis"
+              tabIndex={-1}
+              onKeyDown={aoTeclarNaListaTutores}
               className={`max-h-52 overflow-y-auto rounded-xl border bg-superficie-campo divide-y divide-borda ${
                 errosCampos.tutor_id ? "border-rose-500" : "border-borda-forte"
               }`}
