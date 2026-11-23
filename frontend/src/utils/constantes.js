@@ -1,0 +1,12 @@
+export const UFS_BRASIL = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO",
+  "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI",
+  "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+];
+
+export const ESPECIES_SUGERIDAS = ["Cão", "Gato", "Ave", "Coelho"];
+
+export const OPCOES_SEXO = [
+  { valor: "F", rotulo: "Fêmea", descricao: "F" },
+  { valor: "M", rotulo: "Macho", descricao: "M" },
+];
