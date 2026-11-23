@@ -370,7 +370,6 @@ export function DetalheTutorPage() {
           setConfirmarExclusaoTutorModal(false);
           document.getElementById("secao-animais-tutor")?.scrollIntoView({ behavior: "smooth" });
         }}
-        rotuloTestarBloqueioApi="Tentar excluir mesmo assim (409)"
         rotuloConfirmar="Excluir tutor"
         carregando={excluindoTutor}
         aoConfirmar={confirmarExclusaoDoTutor}
