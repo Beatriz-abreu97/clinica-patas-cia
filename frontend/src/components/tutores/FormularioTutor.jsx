@@ -35,6 +35,7 @@ export function FormularioTutor({
   modoEdicao = false,
   aoSalvar,
   aoCancelar,
+  aoReportarAlteracao,
   salvando = false,
   errosCampos = {},
   erroGeral = "",
@@ -62,6 +63,12 @@ export function FormularioTutor({
     window.addEventListener("beforeunload", aoSairDaPagina);
     return () => window.removeEventListener("beforeunload", aoSairDaPagina);
   }, [alterado, salvando]);
+
+  useEffect(() => {
+    if (aoReportarAlteracao) {
+      aoReportarAlteracao(alterado);
+    }
+  }, [alterado, aoReportarAlteracao]);
 
   function alterarCampo(campo, valor) {
     setDados((atual) => ({ ...atual, [campo]: valor }));

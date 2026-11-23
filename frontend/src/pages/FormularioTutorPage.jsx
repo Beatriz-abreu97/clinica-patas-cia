@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useBlocker, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, RefreshCw, UserX, WifiOff } from "lucide-react";
 import { FormularioTutor } from "../components/tutores/FormularioTutor";
 import { Botao } from "../components/ui/Botao";
@@ -22,6 +22,20 @@ export function FormularioTutorPage() {
   const [salvando, setSalvando] = useState(false);
   const [errosCampos, setErrosCampos] = useState({});
   const [erroGeral, setErroGeral] = useState("");
+  const [formAlterado, setFormAlterado] = useState(false);
+
+  const blocker = useBlocker(({ currentLocation, nextLocation }) =>
+    formAlterado && currentLocation.pathname !== nextLocation.pathname
+  );
+
+  useEffect(() => {
+    if (blocker.state !== "blocked") return;
+    if (window.confirm("Descartar as alterações não salvas deste formulário?")) {
+      blocker.proceed();
+    } else {
+      blocker.reset();
+    }
+  }, [blocker]);
 
   const carregarTutor = useCallback(
     async (signal) => {
@@ -81,6 +95,7 @@ export function FormularioTutorPage() {
       const tutorSalvo = modoEdicao
         ? await atualizarTutor(id, dadosFormulario)
         : await criarTutor(dadosFormulario);
+      setFormAlterado(false);
 
       if (!modoEdicao && irParaNovoAnimal) {
         navigate(`/tutores/${tutorSalvo.id}/animais/novo`, {
@@ -182,7 +197,11 @@ export function FormularioTutorPage() {
         valoresIniciais={tutorInicial}
         modoEdicao={modoEdicao}
         aoSalvar={salvar}
-        aoCancelar={() => navigate(rotaRetorno)}
+        aoCancelar={() => {
+          setFormAlterado(false);
+          navigate(rotaRetorno);
+        }}
+        aoReportarAlteracao={setFormAlterado}
         salvando={salvando}
         errosCampos={errosCampos}
         erroGeral={erroGeral}

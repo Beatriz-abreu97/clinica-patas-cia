@@ -40,6 +40,7 @@ export function FormularioAnimal({
   tutores = [],
   aoSalvar,
   aoCancelar,
+  aoReportarAlteracao,
   salvando = false,
   errosCampos = {},
   erroGeral = "",
@@ -66,6 +67,12 @@ export function FormularioAnimal({
     window.addEventListener("beforeunload", aoSairDaPagina);
     return () => window.removeEventListener("beforeunload", aoSairDaPagina);
   }, [alterado, salvando]);
+
+  useEffect(() => {
+    if (aoReportarAlteracao) {
+      aoReportarAlteracao(alterado);
+    }
+  }, [alterado, aoReportarAlteracao]);
 
   const tutorAtual = useMemo(
     () => tutores.find((item) => String(item.id) === String(dados.tutor_id)) || null,
