@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useBlocker, useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, PawPrint, RefreshCw, UserPlus, WifiOff } from "lucide-react";
 import { FormularioAnimal } from "../components/animais/FormularioAnimal";
@@ -29,11 +29,19 @@ export function FormularioAnimalPage() {
   const [salvando, setSalvando] = useState(false);
   const [errosCampos, setErrosCampos] = useState({});
   const [erroGeral, setErroGeral] = useState("");
-  const [formAlterado, setFormAlterado] = useState(false);
+  const formAlteradoRef = useRef(false);
 
-  const blocker = useBlocker(({ currentLocation, nextLocation }) =>
-    formAlterado && currentLocation.pathname !== nextLocation.pathname
+  const reportarAlteracao = useCallback((valor) => {
+    formAlteradoRef.current = Boolean(valor);
+  }, []);
+
+  const deveBloquearNavegacao = useCallback(
+    ({ currentLocation, nextLocation }) =>
+      formAlteradoRef.current && currentLocation.pathname !== nextLocation.pathname,
+    []
   );
+
+  const blocker = useBlocker(deveBloquearNavegacao);
 
   useEffect(() => {
     if (blocker.state !== "blocked") return;
@@ -113,7 +121,7 @@ export function FormularioAnimalPage() {
       const animalSalvo = modoEdicao
         ? await atualizarAnimal(id, dadosFormulario)
         : await criarAnimal(dadosFormulario);
-      setFormAlterado(false);
+      formAlteradoRef.current = false;
 
       const destinoSucesso = origemRetorno || `/tutores/${animalSalvo.tutor_id}`;
 
@@ -249,10 +257,10 @@ export function FormularioAnimalPage() {
         tutores={tutores}
         aoSalvar={salvar}
         aoCancelar={() => {
-          setFormAlterado(false);
+          formAlteradoRef.current = false;
           navigate(rotaRetorno);
         }}
-        aoReportarAlteracao={setFormAlterado}
+        aoReportarAlteracao={reportarAlteracao}
         salvando={salvando}
         errosCampos={errosCampos}
         erroGeral={erroGeral}
