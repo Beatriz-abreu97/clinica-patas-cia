@@ -605,7 +605,7 @@ Backend só é considerado pronto quando **todos** forem verdadeiros:
 - [x] Contrato **OpenAPI 3.1** publicado (`/api-docs`), guardado por teste.
 - [x] **Rate limit** ativo (300 req/15 min por IP) com `trust proxy` configurado.
 - [x] **Keep-alive** agendado (GitHub Actions a cada 10 min).
-- [ ] API pública em HTTPS no Render, **CORS aceitando a Vercel** — falta a URL do front publicado.
+- [x] API pública em HTTPS no Render, **CORS aceitando a Vercel** (`https://clinica-patas-cia.vercel.app`).
 - [x] `npm test` verde (50 testes).
 - [x] `backend/API.md` atualizado e igual ao comportamento real (fonte da verdade: `openapi.yaml`).
 - [x] `README.md` com passos de instalação, `.env.example`, comandos e runbook de deploy.
@@ -692,9 +692,8 @@ Implementados após a primeira versão deste SPEC (não estavam no plano): `busc
 
 ## 18. Próximos passos imediatos
 
-> Concluídos em 17–18/11: refatoração em camadas (`src/`), migração `002`, CRUD completo de tutores e animais, 50 testes, contrato OpenAPI 3.1 + Swagger UI, rate limit, deploy no Render e keep-alive.
+> Concluídos em 17–23/11: refatoração em camadas (`src/`), migração `002`, CRUD completo de tutores e animais, 50 testes de backend e 18 de frontend, contrato OpenAPI 3.1 + Swagger UI, rate limit, deploy no Render com keep-alive e frontend publicado na Vercel (<https://clinica-patas-cia.vercel.app/>) integrado ao CORS da API.
 
-1. Integração com o front: publicar na Vercel e acrescentar a URL em `CORS_ORIGINS` no Render.
-2. Capturar os prints conforme `doc/roteiro-entrega.md` (os do backend já podem ser 100% feitos).
-3. Montar o PDF (13 tópicos), com capa, declaração de IA e links reais.
-4. **25/11:** feature freeze. **26/11:** revisão final. **27/11:** envio no AVA por todos os integrantes.
+1. Capturar os prints finais (frontend e backend) conforme `doc/roteiro-entrega.md`.
+2. Montar o PDF (13 tópicos), com capa, declaração de IA e links reais.
+3. **25/11:** feature freeze. **26/11:** revisão final. **27/11:** envio no AVA por todos os integrantes.

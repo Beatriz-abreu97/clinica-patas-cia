@@ -1,6 +1,7 @@
 # Roteiro de entrega — PDF (N695, 2026.2)
 
 **Cenário 1 — Clínica veterinária de bairro (Patas & Cia)**
+Aplicação publicada (front): <https://clinica-patas-cia.vercel.app/>
 API publicada: <https://clinica-patas-cia.onrender.com>
 Repositório: <https://github.com/Beatriz-abreu97/clinica-patas-cia>
 Commit publicado na validação: `7ce6357` (conferir no Render antes de gerar o PDF).
@@ -73,7 +74,7 @@ curl.exe -i -X POST "$api/api/tutores" -H "Content-Type: application/json" -d "{
 Disciplina, turma, cenário, nome completo + matrícula de cada integrante.
 
 ### 2. Links de acesso
-Repo público + URL do Render. Deixar explícito que é a API; o front entra com a URL da Vercel.
+Repo público (`https://github.com/Beatriz-abreu97/clinica-patas-cia`), aplicação publicada na Vercel (`https://clinica-patas-cia.vercel.app/`) e API publicada no Render (`https://clinica-patas-cia.onrender.com`). Deixar explícito qual URL é o front e qual é a API.
 
 ### 3. Cenário escolhido e justificativa
 Cenário 1: clínica de bairro, caderno, consultas em duplicidade, dificuldade de localizar animal quando o tutor liga. Justificar: entidades simples e relação 1:N clara, com regra de negócio real (não excluir tutor com animais).

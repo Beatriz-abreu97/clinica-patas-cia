@@ -39,6 +39,7 @@ Nome "Clínica Patas & Cia" e a pata (🐾) como marcação do produto. Nenhum g
 
 ## Evidence on Hand
 
+- Aplicação web publicada (Vercel): https://clinica-patas-cia.vercel.app/
 - API real publicada: https://clinica-patas-cia.onrender.com (contrato OpenAPI em `/api-docs`).
 - Dados de demonstração no banco: tutora Beatriz Abreu com os animais Clarke, Romeu e Matilda.
 - SPEC.md (plano), backend/API.md, 50 testes de backend e 18 testes de frontend passando.

@@ -2,7 +2,8 @@
 
 Sistema Web para a clínica veterinária de bairro **Patas & Cia**, desenvolvido para a disciplina **N695 — Desenvolvimento de Plataformas Web** (Unifor, 2026.2).
 
-**API publicada:** <https://clinica-patas-cia.onrender.com/health>
+**Aplicação publicada (Vercel):** <https://clinica-patas-cia.vercel.app/>
+**API publicada (Render):** <https://clinica-patas-cia.onrender.com/health>
 
 O cenário: a clínica controla tutores e animais em um caderno, o que gera consultas duplicadas e dificuldade para localizar um animal quando o tutor liga. A aplicação resolve isso com cadastro de **tutores** e dos **animais** de cada tutor.
 
@@ -142,14 +143,17 @@ Regras principais: campos obrigatórios, telefone válido, e **não permitir exc
 3. **Build Command:** `npm install`
 4. **Start Command:** `npm start`
 5. **Health Check Path:** `/health`
-6. Environment: `DATABASE_URL`, `CORS_ORIGINS` (URL da Vercel, sem barra final) e `NODE_ENV=production`.
+6. Environment: `DATABASE_URL`, `CORS_ORIGINS` (`https://clinica-patas-cia.vercel.app`, sem barra final) e `NODE_ENV=production`.
 7. Deploy automático a cada push na `main`.
 
 > O plano gratuito do Render hiberna após ~15 min. O workflow `.github/workflows/keep-alive.yml` pinga `/health` a cada 10 minutos para manter a aplicação acordada até 10/12; também pode ser disparado manualmente na aba **Actions** do GitHub. Um serviço externo (cron-job.org ou UptimeRobot) continua valendo como alternativa.
 
 ### Front — Vercel
 
-Root Directory `frontend`; variável `VITE_API_URL=https://<api>.onrender.com/api`.
+- **URL publicada:** <https://clinica-patas-cia.vercel.app/>
+- **Root Directory:** `frontend`
+- **Build Command:** `npm run build` / **Output Directory:** `dist`
+- **Variável de ambiente:** `VITE_API_URL=https://clinica-patas-cia.onrender.com/api`
 
 ## Runbook de deploy (dia a dia)
 
